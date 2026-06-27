@@ -1,6 +1,11 @@
 package coords;
 
+import static java.lang.Math.*;
+
 public class Coordenada {
+
+    private static final double RAIO_TERRA_KM = 6371.0;
+
     private double latitude;
     private double longitude;
     
@@ -15,14 +20,19 @@ public class Coordenada {
     }
 
     public static double distancia(Coordenada p1, Coordenada p2) {
-        final int R = 6371;
-        double latDistance = Math.toRadians(p2.getLatitude() - p1.getLatitude());
-        double lonDistance = Math.toRadians(p2.getLongitude() - p1.getLongitude());
-        double a = Math.sin(latDistance/2) * Math.sin(latDistance/2)
-                + Math.cos(Math.toRadians(p1.getLatitude())) * Math.cos(Math.toRadians(p2.getLatitude()))
-                * Math.sin(lonDistance/2) * Math.sin(lonDistance/2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-        return R * c;
+        //latDistance é a diferença entre as latitudes
+        double latDistance = toRadians(p2.getLatitude() - p1.getLatitude());
+        //lonDistance é a diferença entre as longitudes
+        double lonDistance = toRadians(p2.getLongitude() - p1.getLongitude());
+        //
+        double a = pow(sin(latDistance/2), 2) //sin^2 (latDistance / 2)
+                + cos(toRadians(p1.getLatitude())) * cos(toRadians(p2.getLatitude())) * pow(sin(lonDistance/2), 2);
+              //+ cos (latitude p1)                * cos (latitude p2)                * sin^2 (lonDistance / 2)
+
+             //c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        double c = 2 * atan2(sqrt(a), sqrt(1-a));
+
+        return RAIO_TERRA_KM * c;
     }
 
     public double getLatitude(){

@@ -42,10 +42,9 @@ public class Medicao {
     public double getResiduoPercentual(){
         return residuoPercentual;
     }
+
     // Setters
-    public final void setCidade(String x){
-        cidade = x;
-    }
+    public final void setCidade(String x) {cidade = x;}
     public final void setDateTime(LocalDateTime x){
         timestamp = x;
     }
@@ -58,6 +57,11 @@ public class Medicao {
     }
     public final void setTemperatura(double x){
         temperatura = x;
+    }
+
+    @Override
+    public String toString(){
+        return String.format("%s | %s | %.4f | %.4f | %.2f°C | %.2fkWh", timestamp, cidade, coordenadas.getLatitude(), coordenadas.getLongitude(), temperatura, consumoKwh);
     }
 
 }
