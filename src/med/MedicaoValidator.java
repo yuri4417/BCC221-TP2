@@ -1,7 +1,7 @@
 package med;
 
-public class MedicaoDAO {
-    private ErroValidacao erros;
+public class MedicaoValidator {
+    private final ErroValidacao erros;
 
     //LIMITES PARA VALIDAÇÃO DOS DADOS
     private static final double LAT_MIN = -90.0;
@@ -11,7 +11,7 @@ public class MedicaoDAO {
     private static final double TEMP_MIN = -50.0;
     private static final double TEMP_MAX = 60.0;
 
-    public MedicaoDAO() {
+    public MedicaoValidator() {
         this.erros = new ErroValidacao();
     }
 
@@ -20,7 +20,8 @@ public class MedicaoDAO {
             erros.incrementarErroCoordenada();
             return false;
         }
-        return false;
+        return true;
+
     }
 
     public boolean validarTemperatura(double temp) {

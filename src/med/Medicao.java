@@ -39,6 +39,9 @@ public class Medicao {
     public double getConsumoKwh() {
         return consumoKwh;
     }
+    public double getConsumoPrevisto() {
+        return consumoPrevisto;
+    }
     public double getResiduoPercentual(){
         return residuoPercentual;
     }
@@ -58,10 +61,10 @@ public class Medicao {
     public final void setTemperatura(double x){
         temperatura = x;
     }
-
+    public final void setConsumoKwh(double x) { consumoKwh = x;}
     @Override
     public String toString(){
-        return String.format("%s | %s | %.4f | %.4f | %.2f°C | %.2fkWh", timestamp, cidade, coordenadas.getLatitude(), coordenadas.getLongitude(), temperatura, consumoKwh);
+        return String.format("%s\t%s\t%.4f\t%.4f\t%.1f\t%.2f", timestamp, cidade, coordenadas.getLatitude(), coordenadas.getLongitude(), temperatura, consumoKwh);
     }
 
 }
