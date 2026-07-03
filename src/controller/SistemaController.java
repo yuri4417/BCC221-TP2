@@ -2,10 +2,10 @@ package controller;
 
 import java.util.*;
 import coords.RegressaoLinear;
+import view.MainFrame;
 import view.TabelaModel;
 import med.Medicao;
 import med.MedicaoValidator;
-import view.MainFrame;
 
 public class SistemaController {
     private MedicaoValidator dao;

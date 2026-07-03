@@ -9,25 +9,36 @@ import java.util.Date;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
-import static java.lang.Math.*;
 import coords.Coordenada;
+import static java.lang.Math.*;
 
 public class FiltrosPanel extends JPanel {
+
+    //Botões para aplicar e limpar filtros
+    private JButton btnAplicar;
+    private JButton btnLimpar;
+
+    // TODO: implementar CALENDÁRIO pra escolher data
     //Filtrar o tempo
     private JSpinner dataInicio;
     private JSpinner dataFim;
+
     //Filtrar temperatura
     private JTextField tempMin;
     private JTextField tempMax;
-    //Filtro de Raio
+
+    //Filtro de localização
+    //Filtra as cidades localizadas a uma certa distância de uma certa coordenada
     private JTextField latitude;
     private JTextField longitude;
     private JSpinner raioKm;
+
     private boolean limpando = false;
+    private List<Medicao> listaRegistros = new ArrayList<>();
     private TabelaModel tabelaModel;
 
     public FiltrosPanel() {
-        setLayout(new GridLayout(3, 1, 10, 10));
+        setLayout(new GridLayout(4, 1, 10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         inicializarComponentes();
@@ -43,14 +54,18 @@ public class FiltrosPanel extends JPanel {
         }
     }
 
-    public void limparFiltrosUI(){
+    public void limparFiltrosUI() {
         limpando = true;
+
         dataInicio.setValue(new Date());
         dataFim.setValue(new Date());
+
         tempMin.setText("");
         tempMax.setText("");
+
         latitude.setText("");
         longitude.setText("");
+
         raioKm.setValue(10);
 
         limparTextoSpinner(dataInicio);
@@ -63,12 +78,12 @@ public class FiltrosPanel extends JPanel {
         this.tabelaModel = model;
     }
 
-    public void setListaOriginal(List<Medicao> lista){
-        tabelaModel.setDados(lista);
+    public void setListaOriginal(List<Medicao> lista) {
+        this.listaRegistros = lista;
     }
 
-    public List<Medicao> getListaRegistros(){
-        return tabelaModel.getDados();
+    public List<Medicao> getListaRegistros() {
+        return listaRegistros;
     }
 
     private void inicializarComponentes() {
@@ -76,10 +91,13 @@ public class FiltrosPanel extends JPanel {
         dataFim = new JSpinner(new SpinnerDateModel());
         tempMin = new JTextField(10);
         tempMax = new JTextField(10);
+
         latitude = new JTextField(8);
         longitude = new JTextField(8);
         raioKm = new JSpinner(new SpinnerNumberModel(10, 0, 10000, 1));
 
+        //Data
+        //Panel que filtra os dados relacionados a data
         JPanel panelTempo = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelTempo.setBorder(BorderFactory.createTitledBorder("Intervalo de Tempo"));
         panelTempo.add(new JLabel("Início:"));
@@ -87,6 +105,8 @@ public class FiltrosPanel extends JPanel {
         panelTempo.add(new JLabel("Fim:"));
         panelTempo.add(dataFim);
 
+        //Temperatura
+        //Painel que filtra os dados relacionados a temperatura
         JPanel panelTempe = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelTempe.setBorder(BorderFactory.createTitledBorder("Intervalo de Temperatura"));
         panelTempe.add(new JLabel("Min:"));
@@ -94,6 +114,8 @@ public class FiltrosPanel extends JPanel {
         panelTempe.add(new JLabel("Max:"));
         panelTempe.add(tempMax);
 
+        //Distância
+        //Painel que filtra dados relacionados a distancia
         JPanel panelCoord = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelCoord.setBorder(BorderFactory.createTitledBorder("Busca por Raio"));
         panelCoord.add(new JLabel("Lat:"));
@@ -106,47 +128,60 @@ public class FiltrosPanel extends JPanel {
         add(panelTempo);
         add(panelTempe);
         add(panelCoord);
+
+        // Cria um painel para os botões e adiciona ao FiltrosPanel
+        JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        btnAplicar = new JButton("Aplicar Filtros");
+        btnLimpar = new JButton("Remover Filtros");
+
+        panelBotoes.add(btnAplicar);
+        panelBotoes.add(btnLimpar);
+        add(panelBotoes);
     }
 
     private void configurarListeners() {
-        dataInicio.addChangeListener(e -> apliqueFiltros());
-        dataFim.addChangeListener(e -> apliqueFiltros());
-        raioKm.addChangeListener(e -> apliqueFiltros());
-    }
-//  TODO: Aplicar filtros automaticamente ou criar um botão de aplicar filtros
-    private void apliqueFiltros() {
-        if (limpando) //Pra evitar que o tente aplicar novos filtros enquanto limpa
-            return;
-        try{
+        btnAplicar.addActionListener(e -> apliqueFiltros());
 
-            boolean tempVazia = tempMin.getText().isEmpty() && tempMax.getText().isEmpty();
-            boolean locVazia = latitude.getText().isEmpty() && longitude.getText().isEmpty();
+        btnLimpar.addActionListener(e -> {
+            limparFiltrosUI(); // Limpa os campos visuais da interface
+
+            if (tabelaModel != null) {
+                // atualizarOutliers() no TabelaModel restaura os dadosFiltrados
+                // para a lista original (e mantém a regra de outliers ativa)
+                tabelaModel.atualizarOutliers();
+                tabelaModel.fireTableDataChanged(); // Atualiza a tabela na tela
+            }
+        });
+    }
+
+    private void apliqueFiltros() {
+        if (limpando) // Para evitar que tente aplicar novos filtros enquanto limpa
+            return;
+
+        try {
+            //Captura dados relacionados a temperatura (caso existam)
+            Double tMin = null, tMax = null;
+            if (!tempMin.getText().trim().isEmpty())
+                tMin = Double.parseDouble(tempMin.getText().replace(",", "."));
+            if (!tempMax.getText().trim().isEmpty())
+                tMax = Double.parseDouble(tempMax.getText().replace(",", "."));
+
+            //Captura dados relecionados as coordenadas (caso existam)
+            Double latIni = null, lonIni = null;
+            if (!latitude.getText().trim().isEmpty())
+                latIni = Double.parseDouble(latitude.getText().replace(",", "."));
+            if (!longitude.getText().trim().isEmpty())
+                lonIni = Double.parseDouble(longitude.getText().replace(",", "."));
+
+            double raio = ((Number) raioKm.getValue()).doubleValue();
+
+            //Captura datas
+            LocalDateTime inicio = null;
+            LocalDateTime fim = null;
 
             boolean inicioVazio = ((JSpinner.DefaultEditor) dataInicio.getEditor()).getTextField().getText().isEmpty();
             boolean fimVazio = ((JSpinner.DefaultEditor) dataFim.getEditor()).getTextField().getText().isEmpty();
 
-            if (tempVazia && locVazia && inicioVazio && fimVazio) {
-                throw new IllegalArgumentException("Nenhum campo de filtro preenchido.");
-            }
-
-            //Converte caso o usuario digitar , inves de . (parseDouble converte de string pra numero)
-            Double tMin = null, tMax = null, lat = null, lon = null;
-
-            if (!tempMin.getText().trim().isEmpty())
-                tMin = Double.parseDouble(tempMin.getText().replace(",","."));
-            if (!tempMax.getText().trim().isEmpty())
-                tMax = Double.parseDouble(tempMax.getText().replace(",", "."));
-
-            if (!latitude.getText().trim().isEmpty())
-                lat = Double.parseDouble(latitude.getText().replace(",", "."));
-            if (!longitude.getText().trim().isEmpty())
-                lon = Double.parseDouble(longitude.getText().replace(",", "."));
-
-            double raio = ((Number)raioKm.getValue()).doubleValue(); //doubleValue converte pra numero pra double
-
-            //Converter de date para LocalDateTime
-            LocalDateTime inicio = null;
-            LocalDateTime fim = null;
             if (!inicioVazio) {
                 Date dateIni = (Date) dataInicio.getValue();
                 inicio = dateIni.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
@@ -156,54 +191,64 @@ public class FiltrosPanel extends JPanel {
                 fim = dateFim.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             }
 
-            tabelaModel.setDadosFiltrados(filtrarMedicoes(inicio, fim, tMin, tMax, lat, lon, raio));
-            tabelaModel.fireTableDataChanged();
-        }
-        catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor, insira números válidos nos campos.", "Erro de formato", JOptionPane.ERROR_MESSAGE);
-        }
-        catch (IllegalArgumentException e) {
-            JOptionPane.showMessageDialog(this, "ERRO de preenchimento dos filtros: " + e.getMessage(), "Erro de preenchimento", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
-    }
-
-    private double calcularDistancia(double lat1, double lon1, double lat2, double lon2) {
-        final int RAIO_TERRA = 6371; // Raio da Terra em quilômetros
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2) + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2)) * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return RAIO_TERRA * c;
-    }
-
-    public List<Medicao> filtrarMedicoes(LocalDateTime inicio, LocalDateTime fim, Double tMin, Double tMax, Double latAlvo, Double lonAlvo, Double raioKm){
-        List<Medicao> medicaoFiltrada = new ArrayList<>(); //Vetor de medicoes que estao no filtro
-        for (Medicao m : tabelaModel.getDados()){
-            if (tMin != null && m.getTemperatura() < tMin)
-                continue;
-
-            if (tMax != null && m.getTemperatura() > tMax)
-                continue;
-
-            double distancia = -1;
-            if (latAlvo != null && lonAlvo != null) {
-                distancia = calcularDistancia(m.getCoordenadas().getLatitude(), m.getCoordenadas().getLongitude(), latAlvo, lonAlvo);
-                if (distancia > raioKm)
-                    continue;
+            //Impede a aplicação do filtro apenas se nada foi digitado (mas filtrar os dados com apenas alguns parâmetros)
+            if (tMin == null && tMax == null && latIni == null && lonIni == null && inicio == null && fim == null) {
+                throw new IllegalArgumentException("Nenhum campo preenchido.");
             }
 
-            LocalDateTime data = m.getTimeStamp();
+            //Envia os dados coletados para a verificação (sem latFim e lonFim)
+            tabelaModel.setDadosFiltrados(verificarFiltros(inicio, fim, tMin, tMax, latIni, lonIni, raio));
+            tabelaModel.fireTableDataChanged();
 
-            if (inicio != null && data.isBefore(inicio))
-                continue;
-
-            if (fim != null && data.isAfter(fim))
-                continue;
-
-            medicaoFiltrada.add(m);
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Por favor, insira apenas valores válidos.", "Erro de formato", JOptionPane.ERROR_MESSAGE);
+        } catch (IllegalArgumentException e) {
+            JOptionPane.showMessageDialog(this, e.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
         }
+    }
+
+
+    // Assinatura atualizada: Removidos latFinal e lonFinal
+    public List<Medicao> verificarFiltros(LocalDateTime inicio, LocalDateTime fim, Double tMin, Double tMax, Double latInicial, Double lonInicial, double raioKm) {
+        List<Medicao> medicaoFiltrada = new ArrayList<>();
+
+        for (Medicao m : listaRegistros) {
+            // Inicia assumindo que a medição passa
+            boolean passaFiltro = true;
+
+            //Filtros de tempo
+            //se campo foi preenchido e a data está fora do intervalo não passa pelo filtro
+            if (inicio != null && m.getTimeStamp().isBefore(inicio))
+                passaFiltro = false;
+            if (fim != null && m.getTimeStamp().isAfter(fim))
+                passaFiltro = false;
+
+            //Filtros de temperatura
+            //se campo foi preenchido e temperatura está fora do intervalo não passa pelo filtro
+            if (tMin != null && m.getTemperatura() < tMin)
+                passaFiltro = false;
+            if (tMax != null && m.getTemperatura() > tMax)
+                passaFiltro = false;
+
+            //Filtro de localização
+            //So executa o cálculo de distância se as duas coordenadas base tiverem sido informadas
+            if (passaFiltro && latInicial != null && lonInicial != null) {
+                double latMedicao = m.getCoordenadas().getLatitude();
+                double lonMedicao = m.getCoordenadas().getLongitude();
+
+                double distanciaReal = Coordenada.calcularDistancia(latInicial, lonInicial, latMedicao, lonMedicao);
+
+                if (distanciaReal > raioKm) {
+                    passaFiltro = false;
+                }
+            }
+
+            // Se sobreviveu a todos os testes ativos, adiciona à tabela
+            if (passaFiltro) {
+                medicaoFiltrada.add(m);
+            }
+        }
+
         return medicaoFiltrada;
     }
 }

@@ -1,17 +1,17 @@
 package view;
 
-import view.OutlierTableCellRenderer;
 import javax.swing.*;
 import java.awt.*;
 
 public class RegressaoPanel extends JPanel {
-    private JLabel lblBeta0;
-    private JLabel lblBeta1;
-    private JLabel lblR2;
-    private JLabel lblN;
+    private JLabel labelB0;
+    private JLabel labelB1;
+    private JLabel labelR2;
+    private JLabel labelN;
     private JSlider sliderOutlierPercentual;
     private JToggleButton toggleExcluirOutliers;
     private JTextArea txtAreaErros;
+    private JProgressBar barraR2;
 
     public RegressaoPanel() {
         inicializarComponentes();
@@ -20,21 +20,39 @@ public class RegressaoPanel extends JPanel {
     private void inicializarComponentes() {
         setLayout(new BorderLayout());
 
-        // Painel de resultados
-        JPanel panelResultados = new JPanel(new GridLayout(2, 4, 10, 10));
+        JPanel panelResultados = new JPanel(new BorderLayout(10, 10));
         panelResultados.setBorder(BorderFactory.createTitledBorder("Resultados da Regressão"));
 
-        lblBeta0 = new JLabel("β₀: --", SwingConstants.CENTER);
-        lblBeta1 = new JLabel("β₁: --", SwingConstants.CENTER);
-        lblR2 = new JLabel("R²: --", SwingConstants.CENTER);
-        lblN = new JLabel("N: --", SwingConstants.CENTER);
+        //Painel das variáveis de análise
+        JPanel panelLabels = new JPanel(new GridLayout(1, 4, 10, 10));
+        labelB0 = new JLabel("β₀: --", SwingConstants.CENTER);
+        labelB1 = new JLabel("β₁: --", SwingConstants.CENTER);
+        labelR2 = new JLabel("R²: --", SwingConstants.CENTER);
+        labelN = new JLabel("N: --", SwingConstants.CENTER);
 
-        panelResultados.add(lblBeta0);
-        panelResultados.add(lblBeta1);
-        panelResultados.add(lblR2);
-        panelResultados.add(lblN);
+        panelLabels.add(labelB0);
+        panelLabels.add(labelB1);
+        panelLabels.add(labelR2);
+        panelLabels.add(labelN);
 
-        // Painel de outliers
+        //Painel para barra de R2
+        barraR2 = new JProgressBar(0, 100);
+        barraR2.setStringPainted(true); // Permite mostrar o texto dentro da barra
+        barraR2.setString("-- %");      // Texto inicial
+
+        JPanel panelBarra = new JPanel(new BorderLayout(10, 0));
+        panelBarra.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
+        JLabel labelTituloBarra = new JLabel("Qualidade do Ajuste (R²):");
+
+        panelBarra.add(labelTituloBarra, BorderLayout.WEST);
+        panelBarra.add(barraR2, BorderLayout.CENTER);
+
+        // Adiciona os subpaineis ao painel de resultados principal
+        panelResultados.add(panelLabels, BorderLayout.CENTER);
+        panelResultados.add(panelBarra, BorderLayout.SOUTH);
+
+
+        //Painel de outliers
         JPanel panelOutliers = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelOutliers.setBorder(BorderFactory.createTitledBorder("Configuração de Outliers"));
 
@@ -49,12 +67,14 @@ public class RegressaoPanel extends JPanel {
         panelOutliers.add(sliderOutlierPercentual);
         panelOutliers.add(toggleExcluirOutliers);
 
-        // Área de mensagens
+
+        //Area das mensagens
         txtAreaErros = new JTextArea(5, 40);
         txtAreaErros.setEditable(false);
         txtAreaErros.setForeground(Color.RED);
         JScrollPane scrollErros = new JScrollPane(txtAreaErros);
         scrollErros.setBorder(BorderFactory.createTitledBorder("Mensagens de Validação"));
+
 
         JPanel panelCentro = new JPanel(new BorderLayout());
         panelCentro.add(panelResultados, BorderLayout.NORTH);
@@ -65,17 +85,30 @@ public class RegressaoPanel extends JPanel {
     }
 
     public void atualizarResultados(double beta0, double beta1, double r2, int n) {
-        lblBeta0.setText(String.format("β₀: %.4f", beta0));
-        lblBeta1.setText(String.format("β₁: %.4f", beta1));
-        lblR2.setText(String.format("R²: %.4f", r2));
-        lblN.setText(String.format("N: %d", n));
+        labelB0.setText(String.format("β₀: %.4f", beta0));
+        labelB1.setText(String.format("β₁: %.4f", beta1));
+        labelR2.setText(String.format("R²: %.4f", r2));
+        labelN.setText(String.format("N: %d", n));
+
+        // Atualiza a barra de progresso (convertendo R2 que geralmente é de 0 a 1 para porcentagem 0 a 100)
+        int r2Percentual = (int) Math.round(r2 * 100);
+
+        // Garante que o valor não passe de 100 ou fique negativo (por segurança gráfica)
+        r2Percentual = Math.max(0, Math.min(100, r2Percentual));
+
+        barraR2.setValue(r2Percentual);
+        barraR2.setString(String.format("%.1f %%", r2 * 100)); // Mostra o valor exato dentro da barra
     }
 
     public void limparResultados() {
-        lblBeta0.setText("β₀: --");
-        lblBeta1.setText("β₁: --");
-        lblR2.setText("R²: --");
-        lblN.setText("N: --");
+        labelB0.setText("β₀: --");
+        labelB1.setText("β₁: --");
+        labelR2.setText("R²: --");
+        labelN.setText("N: --");
+
+        // Reseta a barra de progresso
+        barraR2.setValue(0);
+        barraR2.setString("-- %");
     }
 
     public double getLimiteOutlierPercentual() {

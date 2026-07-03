@@ -6,6 +6,8 @@ import java.io.BufferedWriter;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+
 public class TabelaModel extends AbstractTableModel {
     private List<Medicao> dados;
     private List<Medicao> dadosFiltrados;
@@ -14,9 +16,12 @@ public class TabelaModel extends AbstractTableModel {
     private double limiteOutlier;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+
+//  TODO: Implementar Checkbox das medições especificas
     public TabelaModel() {
         this.dados = new ArrayList<>();
         this.dadosFiltrados = new ArrayList<>();
+//      this.checkBox = new HashSet<>();
         this.showOutliers = true;
         this.limiteOutlier = 5;
         this.colunas = new String[]{
@@ -40,6 +45,10 @@ public class TabelaModel extends AbstractTableModel {
     @Override
     public int getColumnCount() {
         return colunas.length;
+    }
+
+    public List<Medicao> getMedicoes() {
+        return this.dados;
     }
 
     //retorna um valor da tabela de uma determinada coordenada (linha, coluna)
@@ -73,8 +82,7 @@ public class TabelaModel extends AbstractTableModel {
         this.dados = dados;
     }
     public void setDadosFiltrados(List<Medicao> dados) {
-        this.dadosFiltrados = dados;
-    }
+        this.dadosFiltrados = dados; }
     //atribui valor a uma certa coordenada da tabela (linha, coluna)
     @Override
     public void setValueAt(Object value, int row, int col) {
@@ -125,14 +133,6 @@ public class TabelaModel extends AbstractTableModel {
             atualizarOutliers();
         }
     }
-
-//    public void adicionarMedicaoFiltro(Medicao m) {
-//        if (dadosFiltrados != null) {
-//            dadosFiltrados.add(m);
-//            atualizarOutliers();
-//        }
-//    }
-
     public void removerMedicoes(int[] linhas) {
         List<Medicao> iraRemover = new ArrayList<>();
         for (int i = 0; i < linhas.length; i++) {

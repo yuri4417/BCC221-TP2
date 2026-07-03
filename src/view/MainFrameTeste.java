@@ -3,21 +3,18 @@ package view;
 import controller.Utils;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.IOException;
+import java.io.File;
+import java.net.URL;
 import javax.swing.*;
-import java.io.*;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import com.formdev.flatlaf.themes.FlatMacDarkLaf;
 import com.formdev.flatlaf.themes.FlatMacLightLaf;
-import med.Medicao;
 
-public class MainFrame extends JFrame{
+public class MainFrameTeste extends JFrame{
 
     private Dimension tamanhoTela;
 
     //opções "globais"
-    private JMenuBar barra;
+    private JPanel sideBar;
 
     private JTabbedPane panels;
 
@@ -27,38 +24,52 @@ public class MainFrame extends JFrame{
     private GraficoPanel graficoPanel;
 
     //arquivos
-    private JMenuItem carregaTSV;
-    private JMenuItem exportaTSV;
+    private JButton carregaTSV;
+    private JButton exportaTSV;
 
     //filtros
-    private JMenuItem limparFiltros;
+    private JButton limparFiltros;
 
     //tema
-    private JMenuItem temaClaro;
-    private JMenuItem temaEscuro;
+    private JButton temaClaro;
+    private JButton temaEscuro;
 
-    public MainFrame(){
+    public MainFrameTeste(){
         setTitle("BCC 221 - POO | Sistema de Previsão de Consumo Energético");
         setTamanhoTela();
         setSize((int) (tamanhoTela.width/1.25), (int) (tamanhoTela.height/1.25));
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        //icone principal
+        URL iconPath = MainFrameTeste.class.getResource("/images/regression.png");
+        if (iconPath != null) {
+            ImageIcon iconePrincipal = new ImageIcon(iconPath);
+            setIconImage(iconePrincipal.getImage());
+        }
+
+
+
+        setLayout(new BorderLayout());
         //Função que cria e inicializa os atributos
         inicializarComponentes();
-        criaMenuBar();
-
+        criaSideBar();
         inicializarEventos();
-        setJMenuBar(barra);
+        JPanel sideBarWrapper = new JPanel(new BorderLayout());
+        sideBarWrapper.add(sideBar, BorderLayout.CENTER);
+        sideBarWrapper.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, UIManager.getColor("Component.borderColor")));
+
+        this.add(sideBarWrapper, BorderLayout.WEST);
+        this.add(panels, BorderLayout.CENTER);
 
         setVisible(true);
 
     }
 
-    private void inicializarComponentes(){
-
-        //Panels contém todos os paineis seguintes
+    private void inicializarComponentes() {
         panels = new JTabbedPane();
+        // Propriedade do FlatLaf para deixar as abas com visual moderno
+        panels.putClientProperty("JTabbedPane.tabType", "card");
 
         medicoesPanel = new MedicoesPanel(null);
         filtrosPanel = new FiltrosPanel();
@@ -66,40 +77,79 @@ public class MainFrame extends JFrame{
         regressaoPanel = new RegressaoPanel();
         graficoPanel = new GraficoPanel();
 
-        panels.addTab("Medições", medicoesPanel);
-        panels.addTab("Filtros", filtrosPanel);
-        panels.addTab("Regressão", regressaoPanel);
-        panels.addTab("Gráfico", graficoPanel);
-
-        this.add(panels);
+        panels.addTab("📊 Medições", medicoesPanel);
+        panels.addTab("🔍 Filtros", filtrosPanel);
+        panels.addTab("📈 Regressão", regressaoPanel);
+        panels.addTab("📉 Gráfico", graficoPanel);
     }
 
-    private void criaMenuBar(){
-        barra = new JMenuBar();
+    private void criaSideBar() {
+        sideBar = new JPanel();
+        sideBar.setLayout(new BoxLayout(sideBar, BoxLayout.Y_AXIS));
+        sideBar.setPreferredSize(new Dimension(240, 0));
+        sideBar.setBorder(BorderFactory.createEmptyBorder(20, 15, 20, 15));
+        sideBar.setBackground(UIManager.getColor("Panel.background"));
 
-        JMenu arquivos = new JMenu("Arquivo");
-        JMenu filtros = new JMenu("Filtros");
-        JMenu temas = new JMenu("Temas");
+        JLabel appTitle = new JLabel(String.format("Kaua"));
+        appTitle.setFont(new Font("Segoe UI", Font.BOLD, 22));
+        appTitle.setBorder(BorderFactory.createEmptyBorder(0, 5, 30, 0));
+        sideBar.add(appTitle);
 
-        carregaTSV = new JMenuItem("Carregar TSV");
-        exportaTSV = new JMenuItem("Exportar TSV");
+//        Botoes
+        carregaTSV = new JButton("📂  Carregar TSV");
+        exportaTSV = new JButton("💾  Exportar TSV");
+        limparFiltros = new JButton("🧹  Limpar Filtros");
+        temaClaro = new JButton("☀️  Tema Claro");
+        temaEscuro = new JButton("🌙  Tema Escuro");
 
-        limparFiltros = new JMenuItem("Limpar Filtros");
+        JButton[] botoes = {carregaTSV, exportaTSV, limparFiltros, temaClaro, temaEscuro};
+        for (JButton btn : botoes) {
+            estilizarBotaoSidebar(btn);
+        }
 
-        temaClaro  = new JMenuItem("Tema Claro");
-        temaEscuro = new JMenuItem("Tema Escuro");
+        // --- Montagem da Sidebar ---
 
-        arquivos.add(carregaTSV);
-        arquivos.add(exportaTSV);
+        JLabel lblArquivos = new JLabel("ARQUIVO");
+        estilizarHeader(lblArquivos);
+        sideBar.add(lblArquivos);
+        sideBar.add(carregaTSV);
+        sideBar.add(Box.createRigidArea(new Dimension(0, 5)));
+        sideBar.add(exportaTSV);
 
-        filtros.add(limparFiltros);
+        sideBar.add(Box.createRigidArea(new Dimension(0, 20)));
 
-        temas.add(temaClaro);
-        temas.add(temaEscuro);
+        JLabel lblFiltros = new JLabel("FILTROS");
+        estilizarHeader(lblFiltros);
+        sideBar.add(lblFiltros);
+        sideBar.add(limparFiltros);
 
-        barra.add(arquivos);
-        barra.add(filtros);
-        barra.add(temas);
+        sideBar.add(Box.createRigidArea(new Dimension(0, 20)));
+
+        JLabel lblTemas = new JLabel("APARÊNCIA");
+        estilizarHeader(lblTemas);
+        sideBar.add(lblTemas);
+        sideBar.add(temaClaro);
+        sideBar.add(Box.createRigidArea(new Dimension(0, 5)));
+        sideBar.add(temaEscuro);
+
+        sideBar.add(Box.createVerticalGlue());
+    }
+    private void estilizarBotaoSidebar(JButton btn) {
+        btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
+        btn.setHorizontalAlignment(SwingConstants.LEFT);
+        btn.setFocusPainted(false);
+        btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        // Mágica do FlatLaf: Remove a borda de "botão duro" e adiciona cantos arredondados no hover
+        btn.putClientProperty("JButton.buttonType", "borderless");
+        btn.putClientProperty("JButton.arc", 15);
+    }
+
+    private void estilizarHeader(JLabel label) {
+        label.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        label.setForeground(UIManager.getColor("Label.disabledForeground"));
+        label.setBorder(BorderFactory.createEmptyBorder(0, 5, 10, 0));
     }
 
     private void inicializarEventos() {
@@ -117,12 +167,12 @@ public class MainFrame extends JFrame{
 
                 // Verifica se o usuário escolheu um arquivo e clicou em "Abrir"
                 if (resultado == JFileChooser.APPROVE_OPTION) {
-                    java.io.File arquivoSelecionado = seletorArquivo.getSelectedFile();
+                    File arquivoSelecionado = seletorArquivo.getSelectedFile();
                     Utils.carregarTSV(arquivoSelecionado.getAbsolutePath(), medicoesPanel.getTabelaModel());
                     medicoesPanel.getTabelaModel().atualizarOutliers();
                     medicoesPanel.getTabelaModel().fireTableDataChanged();
                     filtrosPanel.setListaOriginal(medicoesPanel.getTabelaModel().getDados());
-                    SwingUtilities.updateComponentTreeUI(MainFrame.this);
+                    SwingUtilities.updateComponentTreeUI(MainFrameTeste.this);
                 }
                 else {
                     System.out.println("A seleção de arquivo foi cancelada.");
@@ -137,7 +187,7 @@ public class MainFrame extends JFrame{
 
                 if(/*Salvar Tsv conseguiu executar*/true) {
                     Utils.exportarTSV(medicoesPanel.getTabelaModel());
-                    SwingUtilities.updateComponentTreeUI(MainFrame.this);
+                    SwingUtilities.updateComponentTreeUI(MainFrameTeste.this);
                 }
                 else{
                     System.out.println("O salvamento do arquivo foi cancelada.");
@@ -159,7 +209,7 @@ public class MainFrame extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 try{
                     UIManager.setLookAndFeel(new FlatMacLightLaf());
-                    SwingUtilities.updateComponentTreeUI(MainFrame.this);
+                    SwingUtilities.updateComponentTreeUI(MainFrameTeste.this);
                 }
                 catch(Exception ex){
                     JOptionPane.showMessageDialog(null, "Flatlaf Error: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -171,7 +221,7 @@ public class MainFrame extends JFrame{
             public void actionPerformed(ActionEvent actionEvent) {
                 try {
                     UIManager.setLookAndFeel(new FlatMacDarkLaf());
-                    SwingUtilities.updateComponentTreeUI(MainFrame.this);
+                    SwingUtilities.updateComponentTreeUI(MainFrameTeste.this);
                 }
                 catch (Exception ex) {
                     JOptionPane.showMessageDialog(null, "Flatlaf Error: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
@@ -191,13 +241,14 @@ public class MainFrame extends JFrame{
     }
 
     //ATENÇÃO: NÃO REMOVER MAIN
-    public static void main(String[] args){
+    public static void main(String[] args) {
         try {
+            // Inicializa com as janelas e bordas nativas do SO redondas (se no Windows 11 / Mac)
+            System.setProperty("flatlaf.useWindowDecorations", "true");
             UIManager.setLookAndFeel(new FlatMacDarkLaf());
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(null, "Flatlaf Error: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
-        MainFrame frame = new MainFrame();
+        SwingUtilities.invokeLater(() -> new MainFrameTeste());
     }
 }

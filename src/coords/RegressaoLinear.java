@@ -165,9 +165,17 @@ public class RegressaoLinear {
     }
 
     //Getters
-    public double getB0(){ return B0; }
-    public double getB1(){ return B1; }
-    public double getR2(){ return R2; }
-    public double getN(){ return n; }
+    public double getB0(){
+        return B0;
+    }
+    public double getB1(){
+        return B1;
+    }
+    public double getR2(){
+        return R2;
+    }
+    public double getN(){
+        return n;
+    }
 }
 
