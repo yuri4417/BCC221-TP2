@@ -45,7 +45,6 @@ public class MainFrame extends JFrame{
         setTitle("BCC 221 - POO | Sistema de Previsão de Consumo Energético");
         setTamanhoTela();
         setSize((int) (tamanhoTela.width/1.25), (int) (tamanhoTela.height/1.25));
-        //setLocation(tamanhoTela.width/2, tamanhoTela.height/2);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
@@ -121,7 +120,6 @@ public class MainFrame extends JFrame{
                 int resultado = seletorArquivo.showOpenDialog(null);
 
                 // Verifica se o usuário escolheu um arquivo e clicou em "Abrir"
-//              TODO: Personalizar background da lista
                 if (resultado == JFileChooser.APPROVE_OPTION) {
                     java.io.File arquivoSelecionado = seletorArquivo.getSelectedFile();
                     Utils.carregarTSV(arquivoSelecionado.getAbsolutePath(), medicoesPanel.getTabelaModel());

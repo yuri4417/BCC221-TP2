@@ -48,7 +48,7 @@ public class Medicao {
 
     // Setters
     public final void setCidade(String x) {cidade = x;}
-    public final void setDateTime(LocalDateTime x){
+    public final void setTimeStamp(LocalDateTime x){
         timestamp = x;
     }
     public final void setCoordenadas(Coordenada x){

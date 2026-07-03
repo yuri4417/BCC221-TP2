@@ -30,21 +30,23 @@ public class OutlierTableCellRenderer extends DefaultTableCellRenderer {
                 c.setBackground(Color.MAGENTA);
                 c.setForeground(Color.BLACK);
             }
-        } else {
+        }
+        else {
             if (!isSelected) {
                 // Fundo alternado ou padrão
                 if (row % 2 == 0) {
-                    c.setBackground(new Color(240, 248, 255)); // AliceBlue
-                } else {
-                    c.setBackground(Color.WHITE);
+                    Color mudarColor = UIManager.getColor("Table.alternateRowColor");
+                    c.setBackground(mudarColor != null ? mudarColor : table.getBackground());
                 }
-                c.setForeground(Color.BLACK);
+                else {
+                    c.setBackground(table.getBackground());
+                }
+                c.setForeground(table.getForeground());
             } else {
                 c.setBackground(table.getSelectionBackground());
                 c.setForeground(table.getSelectionForeground());
             }
         }
-
         // Formatação para colunas numéricas
         if (column == 4) { // Temperatura
             setText(String.format("%.2f°C", (Double) value));
@@ -53,7 +55,6 @@ public class OutlierTableCellRenderer extends DefaultTableCellRenderer {
         } else if (column == 7) { // Resíduo
             setText(String.format("%.2f%%", (Double) value));
         }
-
         return c;
     }
 

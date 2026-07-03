@@ -126,11 +126,26 @@ public class TabelaModel extends AbstractTableModel {
         }
     }
 
-    public void removerMedicoes(int[] linhas) {
-        for (int i = 0; i < linhas.length - 1; i++)
-            if (linhas[i] >= 0 && linhas[i] < dados.size())
-                dados.remove(dados.get(linhas[i]));
+//    public void adicionarMedicaoFiltro(Medicao m) {
+//        if (dadosFiltrados != null) {
+//            dadosFiltrados.add(m);
+//            atualizarOutliers();
+//        }
+//    }
 
+    public void removerMedicoes(int[] linhas) {
+        List<Medicao> iraRemover = new ArrayList<>();
+        for (int i = 0; i < linhas.length; i++) {
+            int indice = linhas[i];
+            if (indice >= 0 && indice< dadosFiltrados.size()) {
+                Medicao m = dadosFiltrados.get(indice);
+                iraRemover.add(m);
+            }
+        }
+        if (dados != null) {
+            dados.removeAll(iraRemover);
+        }
         atualizarOutliers();
+        fireTableDataChanged();
     }
 }
