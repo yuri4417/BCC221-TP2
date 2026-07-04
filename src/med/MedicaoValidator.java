@@ -1,7 +1,9 @@
 package med;
 
+import coords.Coordenada;
+
 public class MedicaoValidator {
-    private final ErroValidacao erros;
+    public static ErroValidacao erros = new ErroValidacao();
 
     //LIMITES PARA VALIDAÇÃO DOS DADOS
     private static final double LAT_MIN = -90.0;
@@ -11,12 +13,17 @@ public class MedicaoValidator {
     private static final double TEMP_MIN = -50.0;
     private static final double TEMP_MAX = 60.0;
 
-    public MedicaoValidator() {
-        this.erros = new ErroValidacao();
-    }
+    public MedicaoValidator() {}
 
-    public boolean validarCoordenada(double lat, double lon) {
-        if (lat < LAT_MIN || lat > LAT_MAX || lon < LON_MIN || lon > LON_MAX) {
+    public static boolean validaMedicao(Medicao m){
+        if (validarCoordenada(m.getCoordenadas()) && validarTemperatura(m.getTemperatura()) && validarConsumo(m.getConsumoKwh())) {
+            erros.incrementarErrosTotais();
+            return true;
+        }
+        return false;
+    }
+    public static boolean validarCoordenada(Coordenada x) {
+        if (x.getLatitude() < LAT_MIN || x.getLatitude() > LAT_MAX || x.getLongitude() < LON_MIN || x.getLongitude() > LON_MAX) {
             erros.incrementarErroCoordenada();
             return false;
         }
@@ -24,7 +31,7 @@ public class MedicaoValidator {
 
     }
 
-    public boolean validarTemperatura(double temp) {
+    public static boolean validarTemperatura(double temp) {
         if(temp < TEMP_MIN || temp > TEMP_MAX) {
             erros.incrementarErroTemperatura();
             return false;
@@ -32,7 +39,7 @@ public class MedicaoValidator {
         return true;
     }
 
-    public boolean validarConsumo(double consumo) {
+    public static boolean validarConsumo(double consumo) {
         if (consumo < 0){
             erros.incrementarErroConsumo();
             return false;

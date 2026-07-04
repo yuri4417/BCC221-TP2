@@ -2,14 +2,18 @@ package controller;
 
 import coords.Coordenada;
 import med.Medicao;
+import med.MedicaoValidator;
 import view.TabelaModel;
-
+import static med.MedicaoValidator.*;
 import javax.swing.*;
+import javax.imageio.ImageIO;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import java.awt.*;
 import java.io.*;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-
+//TODO: Mudar exportacao e importacao para classe SistemaController
 public class Utils {
     public static boolean carregarTSV(String caminhoArquivo, TabelaModel t) {
         String linha;
@@ -29,17 +33,23 @@ public class Utils {
                 temp.setCoordenadas(new Coordenada(Double.parseDouble(camposLinha[2]), Double.parseDouble(camposLinha[3])));
                 temp.setTemperatura(Double.parseDouble(camposLinha[4]));
                 temp.setConsumoKwh(Double.parseDouble(camposLinha[5]));
-                System.out.printf("Lendo linha: cidade %s %f", temp.getCidade(), temp.getTemperatura());
-                vec.add(temp);
+                System.out.printf("Lendo linha: cidade %s %f %n", temp.getCidade(), temp.getTemperatura());
+                if (validaMedicao(temp))
+                    vec.add(temp);
             }
             t.setDados(vec);
-        } catch (FileNotFoundException e) {
+        }
+        catch (FileNotFoundException e) {
             JOptionPane.showMessageDialog(null, "Arquivo não encontrado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-        } catch (IOException | RuntimeException e) {
+        }
+        catch (IOException | RuntimeException e) {
             JOptionPane.showMessageDialog(null, "Erro ao processar os dados do arquivo: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
             return false;
         }
+        if (MedicaoValidator.erros.getErrosTotais() > 0)
+            JOptionPane.showMessageDialog(null, "Erro ao processar os dados do arquivo. " + erros.getErrosTotais() +
+                    " Medições com campos inválidos ignorados.", "Erro", JOptionPane.ERROR_MESSAGE);
         System.out.println("OK");
         return true;
 
@@ -72,8 +82,7 @@ public class Utils {
                     }
                 }
                 catch (IOException e) {
-                    JOptionPane.showMessageDialog(null, "Erro ao salvar o arquivo:\n" + e.getMessage(),"Erro de Exportação",
-                            JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null, "Erro ao salvar o arquivo:\n" + e.getMessage(),"Erro de Exportação", JOptionPane.ERROR_MESSAGE);
                     return false;
                 }
             }
@@ -83,5 +92,23 @@ public class Utils {
         JOptionPane.showMessageDialog(null, "Arquivo exportado com sucesso!","Sucesso",
                 JOptionPane.INFORMATION_MESSAGE);
         return true;
+    }
+    public static ImageIcon carregaIcon(String filePath, int largura, int altura) {
+        URL iconPath = Utils.class.getResource(filePath);
+        if (iconPath != null) {
+            try {
+                Image img = ImageIO.read(iconPath);
+                Image imgScaled = img.getScaledInstance(largura, altura, Image.SCALE_SMOOTH);
+                return new ImageIcon(imgScaled);
+            }
+            catch (IOException e) {
+                System.err.println("Erro ao ler o arquivo de imagem: " + filePath);
+                e.printStackTrace();
+            }
+        }
+        else {
+            System.err.println("Aviso: Ícone não encontrado no caminho: " + filePath);
+        }
+        return null;
     }
 }

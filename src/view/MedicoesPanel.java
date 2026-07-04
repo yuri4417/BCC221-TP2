@@ -1,5 +1,6 @@
 package view;
 
+import med.ErroValidacao;
 import med.Medicao;
 import view.TabelaModel;
 import view.OutlierTableCellRenderer;
@@ -14,6 +15,9 @@ import java.util.ArrayList;
 
 //TODO: permitir ordenação dos dados da tabela
 
+//TODO: exibir que não há dados quando não dados (nenhum arquivo carregado ou filtros removeram todas as possibilidades)
+// TODO Label quando nao ha medicoes
+//TODO: exibir que não há dados na tela inicial quando nenhum arquivo foi importado
 public class MedicoesPanel extends JPanel {
     private JTable tabela;
     private TabelaModel tableModel;
@@ -95,6 +99,7 @@ public class MedicoesPanel extends JPanel {
                                     }
                                 }
                             }
+                            // TODO: usar ErroValidacao aqui também
                             medicao.setCidade(cidadeFormatada.toString().trim());
                             double temperatura = Double.parseDouble(stringTemp.getText().replace(",", "."));
                             if (temperatura > 50 || temperatura < -90) {
@@ -186,9 +191,7 @@ public class MedicoesPanel extends JPanel {
 
     public void setTableModel(TabelaModel tableModel) {
         this.tableModel = tableModel;
-
         tabela.setModel((TableModel) tableModel);
-
         // Reaplicar o renderer para todas as colunas
         TableColumnModel colModel = tabela.getColumnModel();
         for (int i = 1; i < tabela.getColumnCount(); i++) {

@@ -6,7 +6,7 @@ import view.MainFrame;
 import view.TabelaModel;
 import med.Medicao;
 import med.MedicaoValidator;
-
+//TODO Resolver duplicacao entre SistemaController e TabelaModel
 public class SistemaController {
     private MedicaoValidator dao;
     private TabelaModel tableModel;

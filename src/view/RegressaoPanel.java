@@ -84,45 +84,53 @@ public class RegressaoPanel extends JPanel {
         add(scrollErros, BorderLayout.CENTER);
     }
 
+    //atualiza os resultados mostrados
     public void atualizarResultados(double beta0, double beta1, double r2, int n) {
         labelB0.setText(String.format("β₀: %.4f", beta0));
         labelB1.setText(String.format("β₁: %.4f", beta1));
         labelR2.setText(String.format("R²: %.4f", r2));
         labelN.setText(String.format("N: %d", n));
 
-        // Atualiza a barra de progresso (convertendo R2 que geralmente é de 0 a 1 para porcentagem 0 a 100)
+        //atualiza a barra de progresso (convertendo R2 que geralmente é de 0 a 1 para porcentagem 0 a 100)
         int r2Percentual = (int) Math.round(r2 * 100);
 
-        // Garante que o valor não passe de 100 ou fique negativo (por segurança gráfica)
+        //garante que o valor não passe de 100 ou fique negativo
         r2Percentual = Math.max(0, Math.min(100, r2Percentual));
 
         barraR2.setValue(r2Percentual);
         barraR2.setString(String.format("%.1f %%", r2 * 100)); // Mostra o valor exato dentro da barra
     }
 
+    //limpa os resultados
     public void limparResultados() {
         labelB0.setText("β₀: --");
         labelB1.setText("β₁: --");
         labelR2.setText("R²: --");
         labelN.setText("N: --");
 
-        // Reseta a barra de progresso
+        //reseta a barra de progresso
         barraR2.setValue(0);
         barraR2.setString("-- %");
     }
 
+    //pega a porcentagem determinada pelo slider
     public double getLimiteOutlierPercentual() {
         return sliderOutlierPercentual.getValue();
     }
 
+    //retorna se a opção de excluir outliers está selecionada ou não
     public boolean isExcluirOutliers() {
         return toggleExcluirOutliers.isSelected();
     }
 
+    //preenche a área de mensagens de erro com a mensagem especificada
     public void exibirMensagensValidacao(String mensagem) {
         txtAreaErros.setText(mensagem);
     }
 
+    //retorna o próprio slider
     public JSlider getSliderOutlierPercentual() { return sliderOutlierPercentual; }
+
+    //retorna o próprio botão de excluir outliers
     public JToggleButton getToggleExcluirOutliers() { return toggleExcluirOutliers; }
 }

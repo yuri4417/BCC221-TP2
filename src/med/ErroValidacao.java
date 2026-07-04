@@ -7,7 +7,7 @@ public class ErroValidacao {
     private int errosFormato;
     private int linhasProcessadas;
     private int linhasValidas;
-
+    private int errosTotais;
     public ErroValidacao() {
         //contrutor que usa função de resetar dados
         resetar();
@@ -32,7 +32,7 @@ public class ErroValidacao {
     public void incrementarLinhasValidas() {
         linhasValidas++;
     }
-
+    public void incrementarErrosTotais() {errosTotais++;}
     public String getMensagemResumo() {
         StringBuilder sb = new StringBuilder();
         sb.append("=== RESUMO DE VALIDAÇÃO ===\n");
@@ -54,6 +54,7 @@ public class ErroValidacao {
         errosFormato = 0;
         linhasProcessadas = 0;
         linhasValidas = 0;
+        errosTotais = 0;
     }
 
     // Getters
@@ -75,4 +76,5 @@ public class ErroValidacao {
     public int getLinhasValidas() {
         return linhasValidas;
     }
+    public int getErrosTotais() {return errosTotais;}
 }

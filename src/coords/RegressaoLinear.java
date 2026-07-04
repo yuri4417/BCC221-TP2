@@ -2,11 +2,12 @@ package coords;
 
 import med.Medicao;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static java.lang.Math.*;
-
+//TODO Verificar lista medicao duplicada possivelmente
 public class RegressaoLinear {
 
     private double B0;
