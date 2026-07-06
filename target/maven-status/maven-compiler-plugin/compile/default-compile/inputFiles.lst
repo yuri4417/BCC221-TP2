@@ -1,0 +1,16 @@
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/Main.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/controller/RegressaoController.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/controller/SistemaController.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/coords/Coordenada.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/coords/RegressaoLinear.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/med/ErroValidacao.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/med/Medicao.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/med/MedicaoValidator.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/todo.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/FiltrosPanel.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/GraficoPanel.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/MainFrame.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/MedicoesPanel.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/RegressaoPanel.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/TabelaModel.java
+/home/yreis188/Documentos/Codigos/BCC221/TP2/src/main/java/view/renders/OutlierTableCellRenderer.java

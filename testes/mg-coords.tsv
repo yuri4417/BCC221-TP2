@@ -1,0 +1,51 @@
+#	Cidade	Latitude	Longitude	Região	População (aprox.)
+1	Belo Horizonte	-19.9167	-43.9333	Central	2.5M
+2	Uberlândia	-18.9186	-48.2772	Triângulo	700k
+3	Contagem	-19.9322	-44.0539	RMBH	670k
+4	Juiz de Fora	-21.7642	-43.3503	Zona da Mata	570k
+5	Betim	-19.9678	-44.1978	RMBH	450k
+6	Montes Claros	-16.7350	-43.8617	Norte	410k
+7	Ribeirão das Neves	-19.7669	-44.0867	RMBH	340k
+8	Uberaba	-19.7483	-47.9319	Triângulo	340k
+9	Governador Valadares	-18.8511	-41.9494	Rio Doce	280k
+10	Ipatinga	-19.4683	-42.5367	Vale do Aço	260k
+11	Sete Lagoas	-19.4658	-44.2467	Central	240k
+12	Divinópolis	-20.1386	-44.8839	Oeste	240k
+13	Santa Luzia	-19.7697	-43.8514	RMBH	220k
+14	Ibirité	-20.0219	-44.0589	RMBH	180k
+15	Poços de Caldas	-21.7878	-46.5614	Sul	170k
+16	Patos de Minas	-18.5789	-46.5181	Alto Paranaíba	160k
+17	Pouso Alegre	-22.2267	-45.9364	Sul	160k
+18	Teófilo Otoni	-17.8575	-41.5050	Mucuri	140k
+19	Barbacena	-21.2214	-43.7703	Campo das Vertentes	140k
+20	Sabará	-19.8864	-43.8067	RMBH	140k
+21	Varginha	-21.5514	-45.4303	Sul	140k
+22	Conselheiro Lafaiete	-20.6603	-43.7856	Central	130k
+23	Itabira	-19.6192	-43.2269	Central	120k
+24	Passos	-20.7189	-46.6097	Sul	120k
+25	Coronel Fabriciano	-19.5186	-42.6289	Vale do Aço	110k
+26	Muriaé	-21.1306	-42.3664	Zona da Mata	110k
+27	Unaí	-16.3575	-46.9069	Noroeste	110k
+28	Caratinga	-19.7897	-42.1392	Rio Doce	95k
+29	Cataguases	-21.3892	-42.6967	Zona da Mata	75k
+30	Viçosa	-20.7556	-42.8742	Zona da Mata	80k
+31	Ouro Preto	-20.3856	-43.5036	Central	75k
+32	Diamantina	-18.2458	-43.6031	Jequitinhonha	50k
+33	Tiradentes	-21.1102	-44.1781	Campo das Vertentes	7k
+34	São João del-Rei	-21.1358	-44.2617	Campo das Vertentes	90k
+35	Lavras	-21.2450	-45.0000	Sul	100k
+36	Itajubá	-22.4256	-45.4528	Sul	95k
+37	Pará de Minas	-19.8600	-44.6078	Central	90k
+38	Nova Lima	-19.9856	-43.8467	RMBH	95k
+39	Brumadinho	-20.1431	-44.2000	RMBH	40k
+40	Congonhas	-20.5000	-43.8578	Central	55k
+41	Mariana	-20.3786	-43.4164	Central	60k
+42	Araxá	-19.5928	-46.9403	Alto Paranaíba	105k
+43	Frutal	-20.0258	-48.9356	Triângulo	60k
+44	Ituiutaba	-18.9689	-49.4639	Triângulo	105k
+45	João Pinheiro	-17.7428	-46.1717	Noroeste	50k
+46	Curvelo	-18.7564	-44.4306	Central	80k
+47	Janaúba	-15.8022	-43.3083	Norte	70k
+48	Almenara	-16.1836	-40.6942	Jequitinhonha	45k
+49	Pedra Azul	-16.0053	-41.2903	Jequitinhonha	25k
+50	Monte Verde (Camanducaia)	-22.8678	-46.0364	Sul	5k
