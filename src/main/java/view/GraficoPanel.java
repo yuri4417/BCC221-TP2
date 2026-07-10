@@ -15,7 +15,7 @@ public class GraficoPanel extends JPanel {
     private double limiteOutlier;
     private double limiteVerde;
     private int largura, altura;
-
+    private double limiteAbsoluto;
     //Borda que define o tamanho maximo do grafico
     //Define o tamanho do recuo
     //ex: margemEsquerda define uma área de 60 pixels livres à esquerda do gráfico
@@ -54,14 +54,14 @@ public class GraficoPanel extends JPanel {
         int areaAltura  = altura - margemTopo - margemBase;
 
         Medicao hoverEncontrado = null;
-
+        double escalaX = areaLargura / (gMaxX - gMinX);
+        double escalaY = areaAltura / (gMaxY - gMinY);
         for (Medicao m : dados) {
             double x = m.getTemperatura();
             double y = m.getConsumoKwh();
 
-            int px = margemEsquerda + (int) (((x - gMinX) / (gMaxX - gMinX)) * areaLargura);
-            int py = (altura - margemBase) - (int) (((y - gMinY) / (gMaxY - gMinY)) * areaAltura);
-
+            int px = margemEsquerda + (int) ((m.getTemperatura() - gMinX) * escalaX);
+            int py = (altura - margemBase) - (int) ((m.getConsumoKwh() - gMinY) * escalaY);
             // Se o mouse estiver dentro dessa área.
             if (Math.abs(mouseX - px) <= 6 && Math.abs(mouseY - py) <= 6) {
                 hoverEncontrado = m;
@@ -101,8 +101,8 @@ public class GraficoPanel extends JPanel {
         int boxAlt = 45;
 
         // Posição flutuante
-        int px = mouseX + 15;
-        int py = mouseY + 15;
+        int px = pontoX + 15;
+        int py = pontoY + 15;
 
         // Evita que a caixa saia da janela
         if (px + boxLarg > largura) px = mouseX - boxLarg - 10;
@@ -129,6 +129,11 @@ public class GraficoPanel extends JPanel {
         this.regressao = regressao;
         this.limiteOutlier = limiteOutlier;
         this.limiteVerde = limiteVerde;
+
+        double media = dados.stream().mapToDouble(Medicao::getConsumoKwh).average().orElse(1.0);
+        if (Math.abs(media) < 1e-10) media = 1.0;
+        this.limiteAbsoluto = (limiteOutlier / 100.0) * media;
+
         repaint();
     }
 
@@ -270,17 +275,7 @@ public class GraficoPanel extends JPanel {
         int areaLarg = largura - margemEsquerda - margemDireita;
         int areaAlt  = altura - margemTopo - margemBase;
 
-        double somaY = 0;
-        for (Medicao m : dados) {
-            somaY += m.getConsumoKwh();
-        }
-        double mediaY;
-        if(dados.isEmpty()){
-            mediaY=1.0;
-        }
-        else{
-            mediaY= somaY/dados.size();
-        }
+        double mediaY = limiteAbsoluto;
 
         //Impede que a divisao no limiteAbs utilize zero ou numero muito proximo de 0
         if (Math.abs(mediaY) < 1e-10)
@@ -335,11 +330,7 @@ public class GraficoPanel extends JPanel {
         g2.setStroke(new BasicStroke(2.5f));
         g2.drawLine(px1, py1, px2, py2);
 
-        double somaY = 0;
-        for (Medicao m : dados) {
-            somaY += m.getConsumoKwh();
-        }
-        double mediaY = dados.isEmpty() ? 1.0 : somaY / dados.size();
+        double mediaY = limiteAbsoluto;
         if (Math.abs(mediaY) < 1e-10)
             mediaY = 1.0;
 

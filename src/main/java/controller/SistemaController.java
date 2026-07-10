@@ -30,7 +30,7 @@ public class SistemaController {
         MedicaoValidator.resetarErros();
 
         int medicoesValidas = 0;
-        int numeroLinha = 1;
+        int numeroLinha = 0;
         List<String> linhasErros = new ArrayList<>();
 
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
@@ -41,6 +41,7 @@ public class SistemaController {
                 String[] camposLinha = linha.split("\t");
                 if (camposLinha.length < 6) {
                     numeroLinha++;
+                    linhasErros.add(numeroLinha +": Campos insuficientes.");
                     continue;
                 }
                 try {
@@ -76,7 +77,7 @@ public class SistemaController {
                         MedicaoValidator.erros.incrementarErrosTotais();
                         linhasErros.add(numeroLinha+": "+ qualErro.toString().trim());
                     }
-                } catch(Exception e){
+                } catch(NumberFormatException | java.time.format.DateTimeParseException e) {
                     MedicaoValidator.erros.incrementarErrosTotais();
                     linhasErros.add(numeroLinha+": Formato de dados inválido.");
                 }
@@ -98,9 +99,10 @@ public class SistemaController {
             e.printStackTrace();
             return false;
         }
+
         if(!linhasErros.isEmpty()){
             JPanel painelErros = new JPanel(new BorderLayout(0,10));
-            JLabel errosEncontrados = new JLabel("HÁ " + linhasErros.size() + " ERRO(S)", SwingConstants.CENTER);
+            JLabel errosEncontrados = new JLabel("Detectados " + linhasErros.size() + " ERRO(S)", SwingConstants.CENTER);
 
             JList<String> listaErros = new JList<>(linhasErros.toArray(new String[0]));
             listaErros.setBackground(UIManager.getColor("Panel.background"));
@@ -137,7 +139,7 @@ public class SistemaController {
             writer.write("timestamp\tcidade\tlatitude\tlongitude\ttemperatura\tconsumoKwh");
             writer.newLine();
             for (var m : t.getDadosFiltrados()) {
-                writer.write(String.format("%s\t%s\t%.4f\t%.4f\t%.1f\t%.0f%n",
+                writer.write(String.format(Locale.ROOT,"%s\t%s\t%.4f\t%.4f\t%.1f\t%.0f%n",
                         m.getTimeStamp().format(t.getFormatter()),
                         m.getCidade(),
                         m.getCoordenadas().getLatitude(),

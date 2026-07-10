@@ -90,7 +90,6 @@ public class RegressaoController {
 
         //calcula os coeficientes e r2
         regressao.setDados(dadosParaCalculo);
-        regressao.calcularCoeficientes();
         double r2 = regressao.calcularR2();
 
         //alimenta todas as medições com os novos resíduos gerados pela reta
@@ -127,21 +126,6 @@ public class RegressaoController {
 
         RegressaoLinear previsao = new RegressaoLinear();
         previsao.setDados(dados);
-        previsao.calcularCoeficientes();
-
-        double somaY = 0;
-        for (Medicao m : dados) {
-            somaY += m.getConsumoKwh();
-        }
-        double mediaY = somaY / dados.size();
-
-        //se a média for nula ou absurda por conta de erros
-        if (Math.abs(mediaY) < 1e-10) {
-            mediaY = 1.0;
-        }
-
-        //define o limite absoluto baseado no slider
-        double limiteAbsoluto = Math.abs((limitePercentual / 100.0) * mediaY);
 
         List<Medicao> dadosFiltrados = new ArrayList<>();
 
@@ -149,14 +133,22 @@ public class RegressaoController {
             double previsto = previsao.prever(m.getTemperatura());
             double real = m.getConsumoKwh();
 
-            //calcula o erro
-            double erro = Math.abs(real - previsto);
+            double erroPercentual = 0.0;
 
-            //se o erro for menor que o limite imposto no slider, mantém o dado
-            if (erro <= limiteAbsoluto) {
+
+            //se o valor for válido, verifica o erro percentual
+            if (Math.abs(real) > 1e-10)
+                erroPercentual = Math.abs((real - previsto) / real) * 100.0;
+
+            //se valor muito proximo de 0, determina o erro como "infinito"
+            else
+                erroPercentual = (Math.abs(previsto) > 1e-10) ? Double.MAX_VALUE : 0.0;
+
+            if (erroPercentual <= limitePercentual)
                 dadosFiltrados.add(m);
-            }
+
         }
+
         return dadosFiltrados;
     }
 }
