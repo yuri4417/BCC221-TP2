@@ -2,14 +2,14 @@ package controller;
 
 import java.awt.*;
 import java.io.*;
-import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.List;
-import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
+
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.TimePickerSettings;
 import coords.Coordenada;
 import coords.RegressaoLinear;
 import view.GraficoPanel;
@@ -127,8 +127,6 @@ public class SistemaController {
         return true;
 
     }
-
-
     public void exportarTSV(String caminhoArquivo, TabelaModel t) throws IOException {
         File arquivo = new File(caminhoArquivo);
         if (!arquivo.getName().toLowerCase().endsWith(".tsv")) {
@@ -148,5 +146,66 @@ public class SistemaController {
                         m.getConsumoKwh()));
             }
         }
+    }
+
+    public static DatePickerSettings getConfigsData() {
+        DatePickerSettings dateSettings = new DatePickerSettings();
+        dateSettings.setFormatForDatesCommonEra("yyyy-MM-dd");
+        dateSettings.setFormatForDatesBeforeCommonEra("uuuu-MM-dd");
+
+        Color corFundo = UIManager.getColor("Panel.background");
+        Color corTexto = UIManager.getColor("Label.foreground");
+        Color corFundoSelecionado = UIManager.getColor("Component.focusColor");
+
+        // Cores da Borda e Menus
+        dateSettings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, corFundo);
+        dateSettings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, corFundo);
+        dateSettings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, corFundo);
+        dateSettings.setColor(DatePickerSettings.DateArea.BackgroundClearLabel, corFundo);
+        dateSettings.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, corFundoSelecionado);
+        dateSettings.setColor(DatePickerSettings.DateArea.TextMonthAndYearMenuLabels, corTexto);
+        dateSettings.setColor(DatePickerSettings.DateArea.TextTodayLabel, corTexto);
+        dateSettings.setColor(DatePickerSettings.DateArea.TextClearLabel, corTexto);
+
+        // Cores Internas do Calendário (Dias e Seleção)
+        dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundNormalDates, corFundo);
+        dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate, corFundoSelecionado);
+        dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextNormalDates, corTexto);
+        dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextWeekdays, corTexto);
+        dateSettings.setColorBackgroundWeekdayLabels(corFundo, true);
+
+
+        // Pega as cores exatas que o FlatLaf usa para os outros JTextFields
+        Color corFundoTexto = UIManager.getColor("TextField.background");
+        Color corTextoTexto = UIManager.getColor("TextField.foreground");
+
+        // Pinta o fundo do campo de texto em todas as situações (válido, inválido, etc)
+        dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundValidDate, corFundoTexto);
+        dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundInvalidDate, corFundoTexto);
+        dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundVetoedDate, corFundoTexto);
+
+        // Pinta o texto
+        dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextValidDate, corTextoTexto);
+        dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextInvalidDate, Color.RED);
+        return dateSettings;
+    }
+
+    public static TimePickerSettings getConfigsTempo() {
+        TimePickerSettings timeSettings = new TimePickerSettings();
+        timeSettings.setAllowKeyboardEditing(true);
+        java.time.format.DateTimeFormatter formatoTempo = java.time.format.DateTimeFormatter.ofPattern("HH:mm:ss");
+        timeSettings.setFormatForDisplayTime(formatoTempo);
+        timeSettings.setFormatForMenuTimes(formatoTempo);
+
+        Color corFundoTexto = UIManager.getColor("TextField.background");
+        Color corTextoTexto = UIManager.getColor("TextField.foreground");
+
+        timeSettings.setColor(com.github.lgooddatepicker.components.TimePickerSettings.TimeArea.TextFieldBackgroundValidTime, corFundoTexto);
+        timeSettings.setColor(com.github.lgooddatepicker.components.TimePickerSettings.TimeArea.TextFieldBackgroundInvalidTime, corFundoTexto);
+        timeSettings.setColor(com.github.lgooddatepicker.components.TimePickerSettings.TimeArea.TextFieldBackgroundVetoedTime, corFundoTexto);
+
+        timeSettings.setColor(com.github.lgooddatepicker.components.TimePickerSettings.TimeArea.TimePickerTextValidTime, corTextoTexto);
+        timeSettings.setColor(com.github.lgooddatepicker.components.TimePickerSettings.TimeArea.TimePickerTextInvalidTime, Color.RED);
+        return timeSettings;
     }
 }

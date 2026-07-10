@@ -253,6 +253,7 @@ public class MainFrame extends JFrame{
             UIManager.setLookAndFeel(laf);
             SwingUtilities.updateComponentTreeUI(MainFrame.this);
 
+            filtrosPanel.trocaTemaCalendario();
             panels.setIconAt(0, carregaIcon("/images/" + tema + "/medicoes.png", 16, 16));
             panels.setIconAt(1, carregaIcon("/images/" + tema + "/loupe.png", 16, 16));
             panels.setIconAt(2, carregaIcon("/images/" + tema + "/regressao.png", 16, 16));

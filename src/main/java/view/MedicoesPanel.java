@@ -1,6 +1,8 @@
 package view;
 
 import static med.MedicaoValidator.*;
+
+import controller.SistemaController;
 import coords.Coordenada;
 import med.Medicao;
 import med.MedicaoValidator;
@@ -11,7 +13,13 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.DatePickerSettings.DateArea;
+import com.github.lgooddatepicker.components.TimePickerSettings;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.LocalDateTime;
 
 public class MedicoesPanel extends JPanel {
     private JTable tabela;
@@ -91,15 +99,20 @@ public class MedicoesPanel extends JPanel {
         btnAdicionar.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
-                JTextField stringData = new JTextField(java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                DateTimePicker campoData = new DateTimePicker(SistemaController.getConfigsData(), SistemaController.getConfigsTempo());
                 JTextField stringCidade = new JTextField();
+                stringCidade.setToolTipText("O nome da cidade não pode estar vazio");
                 JTextField stringTemp = new JTextField();
+                stringTemp.setToolTipText("O intervalo válido de temperatura deve estar entre" + TEMP_MIN + " e " + TEMP_MAX);
                 JTextField stringConsumo = new JTextField();
+                stringConsumo.setToolTipText("O consumo não pode ser negativo");
                 JTextField stringLatitude = new JTextField();
+                stringLatitude.setToolTipText("A latitude deve estar entre " + LAT_MIN + " e " + LAT_MAX);
                 JTextField stringLongitude = new JTextField();
+                stringLongitude.setToolTipText("A longitude deve estar entre " + LON_MIN + " e " + LON_MAX);
 
                 Object[] novaMedicao = {
-                        "Data/Hora:", stringData,
+                        "Data/Hora:", campoData,
                         "Cidade:", stringCidade,
                         "Latitude:", stringLatitude,
                         "Longitude:", stringLongitude,
@@ -111,24 +124,30 @@ public class MedicoesPanel extends JPanel {
 
                     if (opcao == JOptionPane.OK_OPTION) {
                         try {
-                            if (stringData.getText().trim().isEmpty() || stringCidade.getText().trim().isEmpty() || stringLatitude.getText().trim().isEmpty() || stringLongitude.getText().trim().isEmpty() || stringTemp.getText().trim().isEmpty() || stringConsumo.getText().trim().isEmpty()) {
-                                throw new IllegalArgumentException("Todos os campos precisam ser preenchidos.");
-                            }
-                            Medicao medicao = new Medicao();
-                            java.time.format.DateTimeFormatter format = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                            medicao.setTimeStamp(java.time.LocalDateTime.parse(stringData.getText(), format));
+                            LocalDateTime dataInserida = null;
+                            LocalDate dateIni = campoData.getDatePicker().getDate();
+                            LocalTime timeIni = campoData.getTimePicker().getTime();
 
-                            String textoCidade = stringCidade.getText().trim(); // Pega o texto digitado, retira espaco no inicio/fim
-                            StringBuilder cidadeFormatada = new StringBuilder(); // StringBuilder ajuda na formatacao de texto
-                            if (!textoCidade.isEmpty()) { //Verifica se esta vazia
-                                String[] palavras = textoCidade.split("\\s+"); // Coloca as palavra em um vetor, \\s+ separa pelos espacos
-                                for (String palavra : palavras) { // percorre o vetor das palavras
-                                    if (!palavra.isEmpty()) { //Se existir uma palavra
-                                        cidadeFormatada.append(Character.toUpperCase(palavra.charAt(0))).append(palavra.substring(1).toLowerCase()).append(" ");
-                                        //Junta as palavras com a primeira letra Maiuscula nelas
-                                    }
-                                }
+                            if (dateIni != null) {
+                                dataInserida = LocalDateTime.of(dateIni, timeIni != null ? timeIni : LocalTime.MIN);
                             }
+                            if (dataInserida == null || stringCidade.getText().trim().isEmpty() || stringLatitude.getText().trim().isEmpty() ||
+                                    stringLongitude.getText().trim().isEmpty() || stringTemp.getText().trim().isEmpty() || stringConsumo.getText().trim().isEmpty())
+                                throw new IllegalArgumentException("Todos os campos precisam ser preenchidos.");
+
+
+                            Medicao medicao = new Medicao();
+                            medicao.setTimeStamp(dataInserida); // Passa a data pronta
+
+                            String textoCidade = stringCidade.getText().trim();
+                            StringBuilder cidadeFormatada = new StringBuilder();
+                            if (!textoCidade.isEmpty()) {
+                                String[] palavras = textoCidade.split("\\s+");
+                                for (String palavra : palavras)
+                                    if (!palavra.isEmpty())
+                                        cidadeFormatada.append(Character.toUpperCase(palavra.charAt(0))).append(palavra.substring(1).toLowerCase()).append(" ");
+                            }
+
                             double latitude = Double.parseDouble(stringLatitude.getText().replace(",", "."));
                             double longitude = Double.parseDouble(stringLongitude.getText().replace(",", "."));
                             Coordenada coord = new coords.Coordenada(latitude, longitude);
@@ -138,12 +157,12 @@ public class MedicoesPanel extends JPanel {
                             StringBuilder erro = new StringBuilder();
                             if (!validarCoordenada(coord))
                                 erro.append("- Latitude/Longitude fora dos limites permitidos. Latitude deve variar de " + LAT_MIN + " a " + LAT_MAX +
-                                            ". Longitude deve variar de " + LON_MIN + " a " + LON_MAX + ".\n");
+                                        ". Longitude deve variar de " + LON_MIN + " a " + LON_MAX + ".\n");
                             if (!validarTemperatura(temperatura))
                                 erro.append("- A temperatura deve estar no intervalo de " + TEMP_MIN + "ºC" + " e " + TEMP_MAX + "ºC.\n");
                             if (!validarConsumo(consumo))
                                 erro.append("- O consumo não pode ser negativo.\n");
-                            if (erro.length() > 0)
+                            if (!erro.isEmpty())
                                 throw new IllegalArgumentException(erro.toString());
 
                             medicao.setCidade(cidadeFormatada.toString().trim());
@@ -162,12 +181,9 @@ public class MedicoesPanel extends JPanel {
                             JOptionPane.showMessageDialog(MedicoesPanel.this, "Os campos de Latitude, Longitude, Temperatura e Consumo aceitam apenas números.", "Erro de Digitação", JOptionPane.ERROR_MESSAGE);
                         } catch (IllegalArgumentException e) { //Erro de campos sem nada e dados corretamente formatados porém inválidos
                             JOptionPane.showMessageDialog(MedicoesPanel.this, e.getMessage(), "Dados inválidos", JOptionPane.WARNING_MESSAGE);
-                        } catch (java.time.format.DateTimeParseException e) { //Formato da data errado
-                            JOptionPane.showMessageDialog(MedicoesPanel.this, "O formato da data está incorreto.\nUse exatamente: yyyy-MM-dd HH:mm:ss", "Erro na Data", JOptionPane.ERROR_MESSAGE);
                         } catch (Exception e) { //Erro desconhecido
                             JOptionPane.showMessageDialog(MedicoesPanel.this, "Erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         }
-
                     } else { //Clicou no x
                         break;
                     }

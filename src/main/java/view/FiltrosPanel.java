@@ -1,33 +1,37 @@
 package view;
 
 import med.Medicao;
-
+import static controller.SistemaController.*;
 import javax.swing.*;
 import java.awt.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.time.ZoneId;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import coords.Coordenada;
-import static java.lang.Math.*;
+import com.github.lgooddatepicker.components.DateTimePicker;
+import com.github.lgooddatepicker.components.DatePickerSettings;
+import com.github.lgooddatepicker.components.DatePickerSettings.DateArea;
+import com.github.lgooddatepicker.components.TimePickerSettings;
+import javax.swing.UIManager;
 
 public class FiltrosPanel extends JPanel {
 
-    //Botões para aplicar e limpar filtros
+    // Botões para aplicar e limpar filtros
     private JButton btnAplicar;
     private JButton btnLimpar;
 
-    //Filtrar o tempo
-    private JSpinner dataInicio;
-    private JSpinner dataFim;
+    // Usando DateTimePicker para selecionar Data e Hora juntos
+    private DateTimePicker dataInicio;
+    private DateTimePicker dataFim;
 
-    //Filtrar temperatura
+    // Filtrar temperatura
     private JTextField tempMin;
     private JTextField tempMax;
 
-    //Filtro de localização
-    //Filtra as cidades localizadas a uma certa distância de uma certa coordenada
+    // Filtro de localização
     private JTextField latitude;
     private JTextField longitude;
     private JSpinner raioKm;
@@ -46,18 +50,12 @@ public class FiltrosPanel extends JPanel {
         limparFiltrosUI();
     }
 
-    private void limparTextoSpinner(JSpinner spinner) {
-        JComponent editor = spinner.getEditor();
-        if (editor instanceof JSpinner.DefaultEditor) {
-            ((JSpinner.DefaultEditor) editor).getTextField().setText("");
-        }
-    }
-
     public void limparFiltrosUI() {
         limpando = true;
 
-        dataInicio.setValue(new Date());
-        dataFim.setValue(new Date());
+        // O método .clear() do DateTimePicker limpa o calendário e o relógio de uma vez só
+        dataInicio.clear();
+        dataFim.clear();
 
         tempMin.setText("");
         tempMax.setText("");
@@ -67,12 +65,12 @@ public class FiltrosPanel extends JPanel {
 
         raioKm.setValue(10);
 
-        limparTextoSpinner(dataInicio);
-        limparTextoSpinner(dataFim);
-
         limpando = false;
     }
-    public void setTabelaModel(TabelaModel model) {this.tabelaModel = model;}
+
+    public void setTabelaModel(TabelaModel model) {
+        this.tabelaModel = model;
+    }
 
     public void setListaOriginal(List<Medicao> lista) {
         this.listaRegistros = lista;
@@ -83,19 +81,8 @@ public class FiltrosPanel extends JPanel {
     }
 
     private void inicializarComponentes() {
-        dataInicio = new JSpinner(new SpinnerDateModel());
-        dataFim = new JSpinner(new SpinnerDateModel());
-
-        JSpinner.DateEditor editorInicio = new JSpinner.DateEditor(dataInicio, "");
-        dataInicio.setEditor(editorInicio);
-
-        JSpinner.DateEditor editorFim = new JSpinner.DateEditor(dataFim, "");
-        dataFim.setEditor(editorFim);
-
-        // Deixa os campos vazios inicialmente
-        editorInicio.getTextField().setText("");
-        editorFim.getTextField().setText("");
-
+        dataInicio = new DateTimePicker(getConfigsData(), getConfigsTempo());
+        dataFim = new DateTimePicker(getConfigsData(), getConfigsTempo());
         tempMin = new JTextField(10);
         tempMax = new JTextField(10);
 
@@ -103,8 +90,7 @@ public class FiltrosPanel extends JPanel {
         longitude = new JTextField(8);
         raioKm = new JSpinner(new SpinnerNumberModel(10, 0, 10000, 1));
 
-        //Data
-        //Panel que filtra os dados relacionados a data
+        // Painel de Intervalo de Tempo
         JPanel panelTempo = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelTempo.setBorder(BorderFactory.createTitledBorder("Intervalo de Tempo"));
         panelTempo.add(new JLabel("Início:"));
@@ -112,8 +98,7 @@ public class FiltrosPanel extends JPanel {
         panelTempo.add(new JLabel("Fim:"));
         panelTempo.add(dataFim);
 
-        //Temperatura
-        //Painel que filtra os dados relacionados a temperatura
+        // Painel de Temperatura
         JPanel panelTempe = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelTempe.setBorder(BorderFactory.createTitledBorder("Intervalo de Temperatura"));
         panelTempe.add(new JLabel("Min:"));
@@ -121,8 +106,7 @@ public class FiltrosPanel extends JPanel {
         panelTempe.add(new JLabel("Max:"));
         panelTempe.add(tempMax);
 
-        //Distância
-        //Painel que filtra dados relacionados a distancia
+        // Painel de Busca por Raio
         JPanel panelCoord = new JPanel(new FlowLayout(FlowLayout.LEFT));
         panelCoord.setBorder(BorderFactory.createTitledBorder("Busca por Raio"));
         panelCoord.add(new JLabel("Lat:"));
@@ -136,7 +120,7 @@ public class FiltrosPanel extends JPanel {
         add(panelTempe);
         add(panelCoord);
 
-        // Cria um painel para os botões e adiciona ao FiltrosPanel
+        // Painel para os botões de ação
         JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.CENTER));
         btnAplicar = new JButton("Aplicar Filtros");
         btnLimpar = new JButton("Remover Filtros");
@@ -150,30 +134,26 @@ public class FiltrosPanel extends JPanel {
         btnAplicar.addActionListener(e -> apliqueFiltros());
 
         btnLimpar.addActionListener(e -> {
-            limparFiltrosUI(); // Limpa os campos visuais da interface
-
+            limparFiltrosUI();
             if (tabelaModel != null) {
-                // atualizarOutliers() no TabelaModel restaura os dadosFiltrados
-                // para a lista original (e mantém a regra de outliers ativa)
                 tabelaModel.atualizarOutliers();
-                tabelaModel.fireTableDataChanged(); // Atualiza a tabela na tela
+                tabelaModel.fireTableDataChanged();
             }
         });
     }
 
     private void apliqueFiltros() {
-        if (limpando) // Para evitar que tente aplicar novos filtros enquanto limpa
-            return;
+        if (limpando) return;
 
         try {
-            //Captura dados relacionados a temperatura (caso existam)
+            // Captura dados de temperatura
             Double tMin = null, tMax = null;
             if (!tempMin.getText().trim().isEmpty())
                 tMin = Double.parseDouble(tempMin.getText().replace(",", "."));
             if (!tempMax.getText().trim().isEmpty())
                 tMax = Double.parseDouble(tempMax.getText().replace(",", "."));
 
-            //Captura dados relecionados as coordenadas (caso existam)
+            // Captura dados de coordenadas
             Double latIni = null, lonIni = null;
             if (!latitude.getText().trim().isEmpty())
                 latIni = Double.parseDouble(latitude.getText().replace(",", "."));
@@ -182,33 +162,39 @@ public class FiltrosPanel extends JPanel {
 
             double raio = ((Number) raioKm.getValue()).doubleValue();
 
-            //Captura datas
+            // ATUALIZADO: Captura inteligente de Data e Hora
             LocalDateTime inicio = null;
             LocalDateTime fim = null;
 
-            boolean inicioVazio = ((JSpinner.DefaultEditor) dataInicio.getEditor()).getTextField().getText().isEmpty();
-            boolean fimVazio = ((JSpinner.DefaultEditor) dataFim.getEditor()).getTextField().getText().isEmpty();
+            // Extrai os valores internos do DateTimePicker de início
+            LocalDate dateIni = dataInicio.getDatePicker().getDate();
+            LocalTime timeIni = dataInicio.getTimePicker().getTime();
 
-            if (!inicioVazio) {
-                Date dateIni = (Date) dataInicio.getValue();
-                inicio = dateIni.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            }
-            if (!fimVazio) {
-                Date dateFim = (Date) dataFim.getValue();
-                fim = dateFim.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            // Extrai os valores internos do DateTimePicker de fim
+            LocalDate dateFim = dataFim.getDatePicker().getDate();
+            LocalTime timeFim = dataFim.getTimePicker().getTime();
+
+            // Regra para Data Inicial
+            if (dateIni != null) {
+                inicio = LocalDateTime.of(dateIni, timeIni != null ? timeIni : LocalTime.MIN);
             }
 
-            //Impede a aplicação do filtro apenas se nada foi digitado (mas filtrar os dados com apenas alguns parâmetros)
+            // Regra para Data Final
+            if (dateFim != null) {
+                fim = LocalDateTime.of(dateFim, timeFim != null ? timeFim : LocalTime.MAX);
+            }
+
+            // Impede a aplicação se nenhum filtro foi definido
             if (tMin == null && tMax == null && latIni == null && lonIni == null && inicio == null && fim == null) {
                 throw new IllegalArgumentException("Nenhum campo preenchido.");
             }
 
-            //Envia os dados coletados para a verificação (sem latFim e lonFim)
+            // Envia para o TabelaModel e atualiza a tela
             tabelaModel.setDadosFiltrados(verificarFiltros(inicio, fim, tMin, tMax, latIni, lonIni, raio));
             tabelaModel.fireTableDataChanged();
 
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Por favor, insira apenas valores válidos.", "Erro de formato", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Por favor, insira apenas valores válidos nos campos numéricos.", "Erro de formato", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException e) {
             JOptionPane.showMessageDialog(this, e.getMessage(), "Aviso", JOptionPane.WARNING_MESSAGE);
         }
@@ -218,25 +204,21 @@ public class FiltrosPanel extends JPanel {
         List<Medicao> medicaoFiltrada = new ArrayList<>();
 
         for (Medicao m : listaRegistros) {
-            // Inicia assumindo que a medição passa
             boolean passaFiltro = true;
 
-            //Filtros de tempo
-            //se campo foi preenchido e a data está fora do intervalo não passa pelo filtro
+            // Filtros de tempo (compara LocalDateTime completo)
             if (inicio != null && m.getTimeStamp().isBefore(inicio))
                 passaFiltro = false;
             if (fim != null && m.getTimeStamp().isAfter(fim))
                 passaFiltro = false;
 
-            //Filtros de temperatura
-            //se campo foi preenchido e temperatura está fora do intervalo não passa pelo filtro
+            // Filtros de temperatura
             if (tMin != null && m.getTemperatura() < tMin)
                 passaFiltro = false;
             if (tMax != null && m.getTemperatura() > tMax)
                 passaFiltro = false;
 
-            //Filtro de localização
-            //So executa o cálculo de distância se as duas coordenadas base tiverem sido informadas
+            // Filtro de localização (Busca por Raio)
             if (passaFiltro && latInicial != null && lonInicial != null) {
                 double latMedicao = m.getCoordenadas().getLatitude();
                 double lonMedicao = m.getCoordenadas().getLongitude();
@@ -248,12 +230,57 @@ public class FiltrosPanel extends JPanel {
                 }
             }
 
-            // Se sobreviveu a todos os testes ativos, adiciona à tabela
+            // Se passou por todas as barreiras dos filtros ativos, adiciona à lista filtrada
             if (passaFiltro) {
                 medicaoFiltrada.add(m);
             }
         }
 
         return medicaoFiltrada;
+    }
+    public void trocaTemaCalendario() {
+        Color corFundo = UIManager.getColor("Panel.background");
+        Color corTexto = UIManager.getColor("Label.foreground");
+        Color corFundoSelecionado = UIManager.getColor("Component.focusColor");
+
+        // Junta as configurações dos dois calendários para atualizar de uma vez
+        DatePickerSettings[] configuracoes = {
+                dataInicio.getDatePicker().getSettings(),
+                dataFim.getDatePicker().getSettings()
+        };
+
+        for (DatePickerSettings dateSettings : configuracoes) {
+            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, corFundo);
+            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, corFundo);
+            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, corFundo);
+            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundClearLabel, corFundo);
+            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, corFundoSelecionado);
+            dateSettings.setColor(DatePickerSettings.DateArea.TextMonthAndYearMenuLabels, corTexto);
+            dateSettings.setColor(DatePickerSettings.DateArea.TextTodayLabel, corTexto);
+            dateSettings.setColor(DatePickerSettings.DateArea.TextClearLabel, corTexto);
+
+            dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundNormalDates, corFundo);
+            dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate, corFundoSelecionado);
+            dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextNormalDates, corTexto);
+            dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextWeekdays, corTexto);
+            dateSettings.setColorBackgroundWeekdayLabels(corFundo, true);
+
+            // Pega as cores exatas que o FlatLaf usa para os outros JTextFields
+            Color corFundoTexto = UIManager.getColor("TextField.background");
+            Color corTextoTexto = UIManager.getColor("TextField.foreground");
+
+            // Pinta o fundo do campo de texto em todas as situações (válido, inválido, etc)
+            dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundValidDate, corFundoTexto);
+            dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundInvalidDate, corFundoTexto);
+            dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundVetoedDate, corFundoTexto);
+
+            // Pinta o texto
+            dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextValidDate, corTextoTexto);
+            dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextInvalidDate, Color.RED); // Fica vermelho se digitar data errada
+        }
+
+        // Força a interface a redesenhar com as novas cores
+        dataInicio.repaint();
+        dataFim.repaint();
     }
 }
