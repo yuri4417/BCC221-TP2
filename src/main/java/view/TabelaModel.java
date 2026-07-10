@@ -15,14 +15,14 @@ public class TabelaModel extends AbstractTableModel {
     private boolean showOutliers;
     private double limiteOutlier;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-    private double porcentagemLimiteVerde = 0.3;
+    private double porcentagemLimiteVerde;
 
     public TabelaModel() {
         this.dados = new ArrayList<>();
         this.dadosFiltrados = new ArrayList<>();
-//      this.checkBox = new HashSet<>();
         this.showOutliers = true;
         this.limiteOutlier = 5;
+        this.porcentagemLimiteVerde = 0.3;
         this.colunas = new String[]{
                 "Data/Hora",
                 "Cidade",

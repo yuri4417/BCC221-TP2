@@ -87,7 +87,7 @@ public class SistemaController {
             if (graficoPanel != null) {
                 RegressaoLinear regressao = new RegressaoLinear();
                 regressao.setDados(t.getDadosFiltrados());
-                graficoPanel.atualizarDados(t.getDadosFiltrados(), regressao, t.getLimiteOutlier());
+                graficoPanel.atualizarDados(t.getDadosFiltrados(), regressao, t.getLimiteOutlier(), t.getPorcentagemLimiteVerde());
             }
         }
         catch (FileNotFoundException e) {

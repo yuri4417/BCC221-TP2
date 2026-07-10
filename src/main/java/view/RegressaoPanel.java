@@ -55,13 +55,18 @@ public class RegressaoPanel extends JPanel {
 
 
         //Painel de outliers
-        JPanel panelOutliers = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel panelOutliers = new JPanel();
+        panelOutliers.setLayout(new BoxLayout(panelOutliers, BoxLayout.Y_AXIS));
         panelOutliers.setBorder(BorderFactory.createTitledBorder("Configuração de Outliers"));
 
         sliderOutlierPercentual = new JSlider(0, 100, 10);
         sliderOutlierPercentual.setMajorTickSpacing(10);
+        sliderOutlierPercentual.setMinorTickSpacing(5);
         sliderOutlierPercentual.setPaintTicks(true);
         sliderOutlierPercentual.setPaintLabels(true);
+
+        sliderOutlierPercentual.setPreferredSize(new Dimension(330, 55));
+
 
         labelPercentual = new JLabel(sliderOutlierPercentual.getValue() + "%");
         sliderOutlierPercentual.addChangeListener(e -> {
@@ -70,18 +75,22 @@ public class RegressaoPanel extends JPanel {
         JPanel panelResiduo = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         toggleExcluirOutliers = new JToggleButton("Excluir outliers da tabela");
-        panelResiduo.add(new JLabel("Limite de resíduo (%):"));
+        panelResiduo.add(new JLabel("Limite de resíduo (%):                           "));
         panelResiduo.add(sliderOutlierPercentual);
         panelResiduo.add(labelPercentual);
         panelResiduo.add(toggleExcluirOutliers);
 
+
+
         JPanel panelLimiteVerde = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         sliderLimiteVerde = new JSlider(0, 100, 30);
-        sliderLimiteVerde.setMajorTickSpacing(20);
+        sliderLimiteVerde.setMajorTickSpacing(10);
         sliderLimiteVerde.setMinorTickSpacing(5);
         sliderLimiteVerde.setPaintTicks(true);
         sliderLimiteVerde.setPaintLabels(true);
+
+        sliderLimiteVerde.setPreferredSize(new Dimension(330, 55));
 
         JLabel labelLimiteVerde = new JLabel(sliderLimiteVerde.getValue() + "%");
 
@@ -175,5 +184,9 @@ public class RegressaoPanel extends JPanel {
 
     public JSlider getSliderLimiteVerde() {
         return sliderLimiteVerde;
+    }
+
+    public double getLimiteVerde(){
+        return sliderLimiteVerde.getValue();
     }
 }

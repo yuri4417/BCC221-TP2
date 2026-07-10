@@ -6,12 +6,12 @@ public class MedicaoValidator {
     public static ErroValidacao erros = new ErroValidacao();
 
     //LIMITES PARA VALIDAÇÃO DOS DADOS
-    private static final double LAT_MIN = -90.0;
-    private static final double LAT_MAX = 90.0;
-    private static final double LON_MIN = -180.0;
-    private static final double LON_MAX = 180.0;
-    private static final double TEMP_MIN = -50.0;
-    private static final double TEMP_MAX = 60.0;
+    public static final double LAT_MIN = -90.0;
+    public static final double LAT_MAX = 90.0;
+    public static final double LON_MIN = -180.0;
+    public static final double LON_MAX = 180.0;
+    public static final double TEMP_MIN = -50.0;
+    public static final double TEMP_MAX = 60.0;
 
     public MedicaoValidator() {}
 
@@ -47,6 +47,5 @@ public class MedicaoValidator {
     public ErroValidacao getErros() {
         return erros;
     }
-
 
 }

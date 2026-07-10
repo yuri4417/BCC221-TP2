@@ -37,11 +37,21 @@ public class MainFrame extends JFrame{
     public MainFrame(){
         setTitle("BCC 221 - POO | Sistema de Previsão de Consumo Energético");
         setTamanhoTela();
-        setSize((int) (tamanhoTela.width/1.25), (int) (tamanhoTela.height/1.25));
+        if((tamanhoTela.width/1.25) <= 1350 || (tamanhoTela.height/1.25-40)<=680)
+            setExtendedState(JFrame.MAXIMIZED_BOTH); // abre o com tela cheia
+        else {
+            //o Math min pega o menor valor, caso 80% seja menor que 1300 pixel o tamanho é iniciado com o tamanho da tela
+            int larguraTela = (int) Math.min(1500, (tamanhoTela.width / 1.25));
+            int alturaTela = (int) Math.min(1000, (tamanhoTela.height / 1.25) - 40); // -40 para caso tiver no windows não cobrir a barra de tarefas
+            //tamanho que a janela vai iniciar
+            setSize(larguraTela, alturaTela);
+        }
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // limite minimo da janela, caso a tela seja menor que o minimo será iniciada com o tamanho da tela
+        setMinimumSize(new Dimension((int ) 1350, 680));
 
-        //icone principal
+        //icone principal do programa para barra de tarefas
         ImageIcon iconPath = carregaIcon("/images/regression.png", 32, 32);
         if (iconPath != null) {
             setIconImage(iconPath.getImage());

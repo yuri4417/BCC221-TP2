@@ -3,6 +3,7 @@ package view;
 import static med.MedicaoValidator.*;
 import coords.Coordenada;
 import med.Medicao;
+import med.MedicaoValidator;
 import view.renders.OutlierTableCellRenderer;
 import javax.swing.*;
 import javax.swing.table.TableColumnModel;
@@ -136,9 +137,10 @@ public class MedicoesPanel extends JPanel {
 
                             StringBuilder erro = new StringBuilder();
                             if (!validarCoordenada(coord))
-                                erro.append("- Latitude/Longitude fora dos limites permitidos.\n");
+                                erro.append("- Latitude/Longitude fora dos limites permitidos. Latitude deve variar de " + LAT_MIN + " a " + LAT_MAX +
+                                            ". Longitude deve variar de " + LON_MIN + " a " + LON_MAX + ".\n");
                             if (!validarTemperatura(temperatura))
-                                erro.append("- A temperatura deve estar no intervalo de -90ºC e 50ºC.\n");
+                                erro.append("- A temperatura deve estar no intervalo de " + TEMP_MIN + "ºC" + " e " + TEMP_MAX + "ºC.\n");
                             if (!validarConsumo(consumo))
                                 erro.append("- O consumo não pode ser negativo.\n");
                             if (erro.length() > 0)

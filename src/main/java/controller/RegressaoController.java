@@ -63,13 +63,14 @@ public class RegressaoController {
             regressaoPanel.limparResultados();
             regressaoPanel.exibirMensagensValidacao("Aviso: São necessárias pelo menos 2 medições para calcular a regressão.");
             if (graficoPanel != null) {
-                graficoPanel.atualizarDados(new ArrayList<>(), null, 5.0);
+                graficoPanel.atualizarDados(new ArrayList<>(), null, 5.0, 0.0);
             }
             return;
         }
 
         List<Medicao> dadosParaCalculo = dadosCompletos;
         double limite = regressaoPanel.getLimiteOutlierPercentual();
+        double limiteVerde = regressaoPanel.getLimiteVerde();
 
         // Se o botão de "Excluir da tabela" estiver ATIVADO
         if (regressaoPanel.isExcluirOutliers()) {
@@ -82,7 +83,7 @@ public class RegressaoController {
                 model.setLimiteOutlier(limite);
                 model.setShowOutliers(false);
                 if (graficoPanel != null)
-                    graficoPanel.atualizarDados(model.getDadosFiltrados(), null, limite);
+                    graficoPanel.atualizarDados(model.getDadosFiltrados(), null, limite, limiteVerde);
                 return;
             }
         }
@@ -115,7 +116,7 @@ public class RegressaoController {
         regressaoPanel.atualizarResultados(regressao.getB0(), regressao.getB1(), r2, dadosParaCalculo.size());
 
         if (graficoPanel != null) {
-            graficoPanel.atualizarDados(model.getDadosFiltrados(), regressao, limite);
+            graficoPanel.atualizarDados(model.getDadosFiltrados(), regressao, limite, limiteVerde);
         }
     }
 

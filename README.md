@@ -18,26 +18,27 @@ permitindo análises segmentadas e detecção visual de outliers.
 
 ### 1. Manipulação de Dados
 * Carregamento de medições via arquivo `.tsv` utilizando `JFileChooser`.
-* Validação rigorosa de dados (coordenadas, temperaturas reais e consumo não-negativo).
-* Exportação de relatórios `.tsv` contendo exclusivamente os dados filtrados e visíveis na tabela.
+* Filtração automática de medições inválidas ao carregar arquivos/registrar novas medições.
+* Exportação de relatórios `.tsv` contendo os dados visíveis na tabela.
 
 ### 2. Interface Interativa (Swing)
-* **Abas Organizacionais:** Divisão clara entre "Medições", "Filtros" e "Regressão e Previsão".
-* **Tabela Dinâmica:** Implementação de `AbstractTableModel` e `TableCellRenderer` para exibição e edição dos dados, com destaque visual (cores) para medições consideradas outliers.
+* **Funções separadas por abas:** "Medições", "Filtros" e "Regressão e Previsão".
+* **Tabela Dinâmica:** Implementação de `AbstractTableModel` e `TableCellRenderer` para exibição e edição dos dados,
+com destaque visual para medições outliers.
 
 ### 3. Filtros Dinâmicos Simultâneos
 * **Intervalo de Tempo:** Filtragem por data e hora de início/fim.
 * **Intervalo de Temperatura:** Filtragem por temperatura mínima e máxima.
 * **Raio de Coordenadas:** Filtragem por distância em km a partir de uma latitude e longitude específicas, utilizando a **Fórmula de Haversine**.
 
-### 4. Motor de Regressão e Previsão
+### 4. Regressão e Previsão
 * Atualização automática dos coeficientes **β0 (intercepto)** e **β1 (inclinação)** a cada filtro aplicado.
-* Cálculo do **R² (Coeficiente de Determinação)**, representado visualmente por uma `JProgressBar` colorida (Azul, Amarelo ou Vermelho dependendo da precisão).
+* Cálculo do **R² (Coeficiente de Determinação)**, representado visualmente por uma `JProgressBar` colorida (Azul, Amarelo ou Vermelho).
 * Cálculo do resíduo percentual para cada medição.
 * **Gestão de Outliers:** Controle via `JSlider` para definir a porcentagem de corte e um `JToggleButton` para alternar entre apenas destacar ou excluir completamente as anomalias do recálculo.
 
 ### 5. Gráfico 2D
-* Gráfico renderizado via `paintComponent(Graphics g)` mostrando a relação Temperatura x Consumo.
+* Gráfico renderizado via `paintComponent` mostrando a relação Temperatura x Consumo.
 * Plotagem dinâmica dos pontos reais e da reta de regressão linear sobreposta.
 * Atualização em tempo real conforme os filtros são aplicados.
 
@@ -45,6 +46,8 @@ permitindo análises segmentadas e detecção visual de outliers.
 
 ### Pré-requisitos
 * Java Development Kit (JDK) instalado.
+
+MUDAR AQUI
 
 ### Passos
 1. Clone este repositório:
