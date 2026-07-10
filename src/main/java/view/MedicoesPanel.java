@@ -64,7 +64,7 @@ public class MedicoesPanel extends JPanel {
 
         // Configurar renderer para outliers
         TableColumnModel colModel = tabela.getColumnModel();
-        for (int i = 1; i < tabela.getColumnCount(); i++) {
+        for (int i = 0; i < tabela.getColumnCount(); i++) {
             colModel.getColumn(i).setCellRenderer(new OutlierTableCellRenderer());
         }
 
@@ -72,8 +72,11 @@ public class MedicoesPanel extends JPanel {
 
         JPanel panelBotoes = new JPanel(new FlowLayout(FlowLayout.LEFT));
         btnAdicionar = new JButton("Adicionar linha");
+        btnAdicionar.setToolTipText("Adiciona uma nova medição");
         btnEditar = new JButton("Editar selecionado");
+        btnEditar.setToolTipText("Edita uma medição");
         btnRemover = new JButton("Remover linha(s) selecionada(s)");
+        btnRemover.setToolTipText("Remove medição");
 
         panelBotoes.add(btnAdicionar);
         panelBotoes.add(btnEditar);
@@ -208,7 +211,6 @@ public class MedicoesPanel extends JPanel {
     }
 
     public void atualizarTabela() {
-
         tableModel.fireTableDataChanged();
     }
 
@@ -277,10 +279,6 @@ public class MedicoesPanel extends JPanel {
             }
         }
     }
-
-
-
-
 
     public int[] getLinhasSelecionadas() {
         return tabela.getSelectedRows();

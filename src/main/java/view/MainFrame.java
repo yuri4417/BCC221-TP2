@@ -52,7 +52,7 @@ public class MainFrame extends JFrame{
         criaSideBar();
         inicializarEventos();
 
-        regressaoController = new RegressaoController(medicoesPanel, regressaoPanel);
+        regressaoController = new RegressaoController(medicoesPanel, regressaoPanel,graficoPanel);
         sistemaController = new SistemaController();
         JPanel sideBarWrapper = new JPanel(new BorderLayout());
         sideBarWrapper.add(sideBar, BorderLayout.CENTER);
@@ -151,6 +151,16 @@ public class MainFrame extends JFrame{
         btn.putClientProperty("JButton.arc", 15);
     }
 
+    private void atualizarTextoOutlier() {
+        boolean ocultos = regressaoPanel.getToggleExcluirOutliers().isSelected();
+        int percentual = (int) regressaoPanel.getLimiteOutlierPercentual();
+
+        String cor = ocultos ? "#d9534f" : "#5cb85c";
+        String textoVisibilidade = ocultos ? "Ocultos" : "Visíveis";
+
+        statusOutliers.setText("<html>Outliers: <font color='" + cor + "'><b>" + textoVisibilidade +
+                "</b></font> | Resíduo: <b>" + percentual + "%</b></html>");
+    }
     private void estilizarHeader(JLabel label) {
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
         label.setForeground(UIManager.getColor("Label.disabledForeground"));
@@ -167,10 +177,11 @@ public class MainFrame extends JFrame{
                 if (resultado == JFileChooser.APPROVE_OPTION) {
                     var tabela = medicoesPanel.getTabelaModel();
                     File arquivoSelecionado = seletorArquivo.getSelectedFile();
-                    sistemaController.carregarTSV(arquivoSelecionado.getAbsolutePath(), tabela, graficoPanel);                    medicoesPanel.setNomeArquivo(arquivoSelecionado.getName());
+                    sistemaController.carregarTSV(arquivoSelecionado.getAbsolutePath(), tabela, graficoPanel);
+                    medicoesPanel.setNomeArquivo(arquivoSelecionado.getName());
                     tabela.atualizarOutliers();
                     tabela.fireTableDataChanged();
-                    filtrosPanel.setListaOriginal(tabela.getDados());
+                    filtrosPanel.setListaOriginal(tabela.getDadosFiltrados()); //MUDOU AQUI DE DADOS PARA DADOS FILTRADOS
                     SwingUtilities.updateComponentTreeUI(MainFrame.this);
                 }
                 else
@@ -213,11 +224,18 @@ public class MainFrame extends JFrame{
         temaEscuro.addActionListener(e -> trocarTema(new FlatMacDarkLaf(), "dark"));
 
         JToggleButton btnExcluirOutliers = regressaoPanel.getToggleExcluirOutliers();
-        btnExcluirOutliers.addItemListener(e -> {
-            if (btnExcluirOutliers.isSelected())
-                statusOutliers.setText("<html>Outliers: <font color='#d9534f'><b>Ocultos</b></font> | Resíduo: <b>" + (int)regressaoPanel.getLimiteOutlierPercentual() + "%</b></html>");
-            else
-                statusOutliers.setText("<html>Outliers: <font color='#5cb85c'><b>Visíveis</b></font> | Resíduo: <b>" + (int)regressaoPanel.getLimiteOutlierPercentual() + "%</b></html>");
+        btnExcluirOutliers.addItemListener(e -> atualizarTextoOutlier());
+        JSlider sliderResiduo = regressaoPanel.getSliderOutlierPercentual();
+        sliderResiduo.addChangeListener(e -> atualizarTextoOutlier());
+
+        JSlider sliderLimiteVerde = regressaoPanel.getSliderLimiteVerde();
+
+        sliderLimiteVerde.addChangeListener(e -> {
+            medicoesPanel.getTabelaModel().setPorcentagemLimiteVerde(
+                    sliderLimiteVerde.getValue() / 100.0
+            );
+
+            medicoesPanel.getTabelaModel().fireTableDataChanged();
         });
     }
     private void trocarTema(LookAndFeel laf, String tema) {

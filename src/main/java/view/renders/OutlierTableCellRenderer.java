@@ -29,8 +29,7 @@ public class OutlierTableCellRenderer extends DefaultTableCellRenderer {
             double limite = model.getLimiteOutlier();
 
             //determina o "limite baixo"
-            //no caso 30% do outlier
-            double limiteVerde = limite * 0.3;
+            double limiteVerde = limite * model.getPorcentagemLimiteVerde();
 
             //salva o residuo de cada registro
             double residuoAbsoluto = Math.abs(m.getResiduoPercentual());

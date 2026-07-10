@@ -15,7 +15,7 @@ public class TabelaModel extends AbstractTableModel {
     private boolean showOutliers;
     private double limiteOutlier;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
+    private double porcentagemLimiteVerde = 0.3;
 
     public TabelaModel() {
         this.dados = new ArrayList<>();
@@ -35,6 +35,13 @@ public class TabelaModel extends AbstractTableModel {
         };
     }
 
+    public double getPorcentagemLimiteVerde() {
+        return porcentagemLimiteVerde;
+    }
+
+    public void setPorcentagemLimiteVerde(double porcentagem) {
+        this.porcentagemLimiteVerde = porcentagem;
+    }
     @Override
     public int getRowCount() {
         if (dadosFiltrados != null)

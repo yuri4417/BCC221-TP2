@@ -1,18 +1,16 @@
-//TODO: Corrigir (dar mais atenção) processo de cálculo da regressão
-//FIXME: Logar tudo via terminal
-
-// IMPORTANTE ==> TODO: MELHORAR O README
-//TODO Verificar lista medicao duplicada possivelmente
-
 //OBRIGATÓRIOS - FAZER OU MORRER
+//TODO fazer com que a data inicial não seja iniciada com a data atual 😨
 
-//TODO JTable com TableCellRenderer personalizado (ex: fundo verde para resíduos baixos, vermelho para altos – opcional mas valorizado) - Menu para definir o conceito de baixos e altos
-//TODO JProgressBar para representar visualmente o R² (0% a 100%) - Colorir a barra: Azul (R² <= 5), Amarelo (5 < R² <= 8), Vermelho (8 < R²)
-//TODO fazer com que a data inicial não seja iniciada com a data atual
+
+
+// IMPORTANTE ==>
+// TODO: MELHORAR O README
+// TODO Verificar redudancias/otimizar codigo com o inteligencia humana
+// TODO fazer outro modelo de gráfico que será mostrado caso as medições tenham uma temperatura que não pode ser exibida
 
 //Extra
+// TODO SUPREMO: Quando passar o mouse sobre os pontos do gráfico, exibir dados da medição que ele representa
 // TODO: exibir um botão de ajuda informando os limites válidos para coordenadas, consumo e temperatura
-// TODO: implementar CALENDÁRIO pra escolher data
 
 //Sobre o gráfico
 //Implementar um gráfico 2D que exiba a relação Temperatura × Consumo kWh:
@@ -24,6 +22,3 @@
 //Plotar reta da regressão linear sobreposta em azul
 //Equação da reta (𝑦 = β₀ + β₁. 𝑥) e valor do 𝑅 exibidos no canto superior do
 //gráfico
-
-// talvez TODO Implementar Log dos comandos executados
-//TODO Permitir editar temperatura e consumo diretamente na tabela

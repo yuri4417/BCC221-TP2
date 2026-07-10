@@ -13,6 +13,7 @@ public class RegressaoPanel extends JPanel {
     private JTextArea txtAreaErros;
     private JProgressBar barraR2;
     private JLabel labelPercentual;
+    private JSlider sliderLimiteVerde;
 
     public RegressaoPanel() {
         inicializarComponentes();
@@ -66,12 +67,34 @@ public class RegressaoPanel extends JPanel {
         sliderOutlierPercentual.addChangeListener(e -> {
             labelPercentual.setText(sliderOutlierPercentual.getValue() + "%");
         });
+        JPanel panelResiduo = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
         toggleExcluirOutliers = new JToggleButton("Excluir outliers da tabela");
-        panelOutliers.add(new JLabel("Limite de resíduo (%):"));
-        panelOutliers.add(sliderOutlierPercentual);
-        panelOutliers.add(labelPercentual);
-        panelOutliers.add(toggleExcluirOutliers);
+        panelResiduo.add(new JLabel("Limite de resíduo (%):"));
+        panelResiduo.add(sliderOutlierPercentual);
+        panelResiduo.add(labelPercentual);
+        panelResiduo.add(toggleExcluirOutliers);
+
+        JPanel panelLimiteVerde = new JPanel(new FlowLayout(FlowLayout.LEFT));
+
+        sliderLimiteVerde = new JSlider(0, 100, 30);
+        sliderLimiteVerde.setMajorTickSpacing(20);
+        sliderLimiteVerde.setMinorTickSpacing(5);
+        sliderLimiteVerde.setPaintTicks(true);
+        sliderLimiteVerde.setPaintLabels(true);
+
+        JLabel labelLimiteVerde = new JLabel(sliderLimiteVerde.getValue() + "%");
+
+        sliderLimiteVerde.addChangeListener(e ->
+                labelLimiteVerde.setText(sliderLimiteVerde.getValue() + "%")
+        );
+
+        panelLimiteVerde.add(new JLabel("Zona de Proximidade (% do limite):"));
+        panelLimiteVerde.add(sliderLimiteVerde);
+        panelLimiteVerde.add(labelLimiteVerde);
+
+        panelOutliers.add(panelResiduo);
+        panelOutliers.add(panelLimiteVerde);
 
         //Area das mensagens
         txtAreaErros = new JTextArea(5, 40);
@@ -126,6 +149,9 @@ public class RegressaoPanel extends JPanel {
         barraR2.setForeground(UIManager.getColor("ProgressBar.foreground"));//
     }
 
+    public JSlider getSliderOutlier() {
+        return sliderOutlierPercentual;
+    }
     //pega a porcentagem determinada pelo slider
     public double getLimiteOutlierPercentual() {
         return sliderOutlierPercentual.getValue();
@@ -146,4 +172,8 @@ public class RegressaoPanel extends JPanel {
 
     //retorna o próprio botão de excluir outliers
     public JToggleButton getToggleExcluirOutliers() { return toggleExcluirOutliers; }
+
+    public JSlider getSliderLimiteVerde() {
+        return sliderLimiteVerde;
+    }
 }

@@ -5,7 +5,9 @@ import med.Medicao;
 import view.MedicoesPanel;
 import view.RegressaoPanel;
 import view.TabelaModel;
+import view.GraficoPanel;
 
+import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import java.util.List;
@@ -14,19 +16,20 @@ import java.util.ArrayList;
 public class RegressaoController {
     private MedicoesPanel medicoesPanel;
     private RegressaoPanel regressaoPanel;
+    private GraficoPanel graficoPanel;
     private RegressaoLinear regressao;
 
-    public RegressaoController(MedicoesPanel medicoesPanel, RegressaoPanel regressaoPanel) {
-
+    public RegressaoController(MedicoesPanel medicoesPanel, RegressaoPanel regressaoPanel,GraficoPanel graficoPanel) {
         this.medicoesPanel = medicoesPanel;
         this.regressaoPanel = regressaoPanel;
+        this.graficoPanel = graficoPanel;
         this.regressao = new RegressaoLinear();
 
-        inicializarOuvintes();
+        inicializarListeners();
         atualizarRegressao();
     }
 
-    private void inicializarOuvintes() {
+    private void inicializarListeners() {
         //Se a tabela foi alterada, atualiza as medidas de regressão
         medicoesPanel.getTableModel().addTableModelListener(new TableModelListener() {
             @Override
@@ -59,6 +62,9 @@ public class RegressaoController {
         if (dadosCompletos == null || dadosCompletos.size() < 2) {
             regressaoPanel.limparResultados();
             regressaoPanel.exibirMensagensValidacao("Aviso: São necessárias pelo menos 2 medições para calcular a regressão.");
+            if (graficoPanel != null) {
+                graficoPanel.atualizarDados(new ArrayList<>(), null, 5.0);
+            }
             return;
         }
 
@@ -68,10 +74,15 @@ public class RegressaoController {
         // Se o botão de "Excluir da tabela" estiver ATIVADO
         if (regressaoPanel.isExcluirOutliers()) {
             dadosParaCalculo = removerOutliers(dadosCompletos, limite);
-
             if (dadosParaCalculo.size() < 2) {
                 regressaoPanel.limparResultados();
                 regressaoPanel.exibirMensagensValidacao("Aviso: Após remover outliers, restaram menos de 2 dados.");
+
+                TabelaModel model = medicoesPanel.getTableModel();
+                model.setLimiteOutlier(limite);
+                model.setShowOutliers(false);
+                if (graficoPanel != null)
+                    graficoPanel.atualizarDados(model.getDadosFiltrados(), null, limite);
                 return;
             }
         }
@@ -102,6 +113,10 @@ public class RegressaoController {
 
         //exibe os resultados nos JLabels da View
         regressaoPanel.atualizarResultados(regressao.getB0(), regressao.getB1(), r2, dadosParaCalculo.size());
+
+        if (graficoPanel != null) {
+            graficoPanel.atualizarDados(model.getDadosFiltrados(), regressao, limite);
+        }
     }
 
     //filtrar outliers

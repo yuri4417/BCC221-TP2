@@ -3,11 +3,15 @@
 ## Sobre o Projeto
 Este projeto é um sistema desenvolvido em Java para auxiliar gestores de energia na análise da relação entre a temperatura externa e o consumo de energia (em kWh). Utilizando **Regressão Linear** (y = β0 + β1.x), a aplicação permite identificar o impacto da temperatura no consumo e prever gastos futuros.
 
-O principal diferencial do sistema é a capacidade de aplicar **filtros dinâmicos** (por tempo, temperatura e localização geográfica) e recalcular matematicamente a regressão em tempo real apenas sobre os dados de interesse, permitindo análises altamente segmentadas e a detecção visual de anomalias (outliers).
+O principal diferencial do sistema é a capacidade de aplicar **filtros dinâmicos**
+e recalcular matematicamente a regressão em tempo real apenas sobre os dados de interesse,
+permitindo análises segmentadas e detecção visual de outliers.
 
 ## Tecnologias Utilizadas
 * **Linguagem:** Java
 * **Interface Gráfica:** Java Swing
+* **Biblioteca de Look and Feel:** Flatlaf
+* **Geração de Gráficos da Regressão Linear:** Graphics2D (pacote AWT)
 * **Estruturação de Dados:** Arquivos TSV 
 
 ## Funcionalidades

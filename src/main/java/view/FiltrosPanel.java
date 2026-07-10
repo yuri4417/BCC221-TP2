@@ -37,7 +37,7 @@ public class FiltrosPanel extends JPanel {
     private TabelaModel tabelaModel;
 
     public FiltrosPanel() {
-        setLayout(new GridLayout(4, 1, 10, 10));
+        setLayout(new GridLayout(5, 1, 10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         inicializarComponentes();
@@ -72,7 +72,6 @@ public class FiltrosPanel extends JPanel {
 
         limpando = false;
     }
-
     public void setTabelaModel(TabelaModel model) {this.tabelaModel = model;}
 
     public void setListaOriginal(List<Medicao> lista) {
@@ -86,6 +85,17 @@ public class FiltrosPanel extends JPanel {
     private void inicializarComponentes() {
         dataInicio = new JSpinner(new SpinnerDateModel());
         dataFim = new JSpinner(new SpinnerDateModel());
+
+        JSpinner.DateEditor editorInicio = new JSpinner.DateEditor(dataInicio, "");
+        dataInicio.setEditor(editorInicio);
+
+        JSpinner.DateEditor editorFim = new JSpinner.DateEditor(dataFim, "");
+        dataFim.setEditor(editorFim);
+
+        // Deixa os campos vazios inicialmente
+        editorInicio.getTextField().setText("");
+        editorFim.getTextField().setText("");
+
         tempMin = new JTextField(10);
         tempMax = new JTextField(10);
 

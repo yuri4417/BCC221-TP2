@@ -24,6 +24,16 @@ public class RegressaoLinear {
 
     public void setDados(List<Medicao> dados) {
         this.dados = dados;
+        if (this.dados != null && this.dados.size() >= 2) {
+            this.calcularCoeficientes();
+            this.calcularR2();
+        }
+        else {
+            this.B0 = 0;
+            this.B1 = 0;
+            this.R2 = 0;
+            this.n = (this.dados != null) ? this.dados.size() : 0;
+        }
     }
 
     public void calcularCoeficientes() {
