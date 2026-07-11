@@ -37,17 +37,13 @@ public class RegressaoLinear {
     }
 
     public void calcularCoeficientes() {
-
         if (this.dados == null) {
             throw new IllegalArgumentException("A lista de dados não pode ser nula. Use setDados() primeiro.");
         }
-
         if (this.dados.isEmpty()) {
             throw new IllegalArgumentException("A lista de dados não pode estar vazia.");
         }
-
         this.n = this.dados.size();
-
         //calcula as médias
         double somaX = 0, somaY = 0;
         for (Medicao m : this.dados) {

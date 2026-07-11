@@ -150,16 +150,19 @@ public class SistemaController {
         }
     }
 
-    public static DatePickerSettings getConfigsData() {
-        DatePickerSettings dateSettings = new DatePickerSettings();
-        dateSettings.setFormatForDatesCommonEra("yyyy-MM-dd");
-        dateSettings.setFormatForDatesBeforeCommonEra("uuuu-MM-dd");
+    public static Double parseDouble(String texto) throws NumberFormatException {
+        if (texto == null || texto.trim().isEmpty())
+            return null;
+        
+        return Double.parseDouble(texto.trim().replace(",", "."));
+    }
 
+    public static void aplicarTemaCalendario(DatePickerSettings dateSettings) {
         Color corFundo = UIManager.getColor("Panel.background");
         Color corTexto = UIManager.getColor("Label.foreground");
         Color corFundoSelecionado = UIManager.getColor("Component.focusColor");
 
-        // Cores da Borda e Menus
+        // cores da bordad e menu
         dateSettings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, corFundo);
         dateSettings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, corFundo);
         dateSettings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, corFundo);
@@ -169,7 +172,7 @@ public class SistemaController {
         dateSettings.setColor(DatePickerSettings.DateArea.TextTodayLabel, corTexto);
         dateSettings.setColor(DatePickerSettings.DateArea.TextClearLabel, corTexto);
 
-        // Cores Internas do Calendário (Dias e Seleção)
+        // cores internas do calendario
         dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundNormalDates, corFundo);
         dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate, corFundoSelecionado);
         dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextNormalDates, corTexto);
@@ -177,18 +180,22 @@ public class SistemaController {
         dateSettings.setColorBackgroundWeekdayLabels(corFundo, true);
 
 
-        // Pega as cores exatas que o FlatLaf usa para os outros JTextFields
         Color corFundoTexto = UIManager.getColor("TextField.background");
         Color corTextoTexto = UIManager.getColor("TextField.foreground");
 
-        // Pinta o fundo do campo de texto em todas as situações (válido, inválido, etc)
         dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundValidDate, corFundoTexto);
         dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundInvalidDate, corFundoTexto);
         dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundVetoedDate, corFundoTexto);
-
-        // Pinta o texto
         dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextValidDate, corTextoTexto);
         dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextInvalidDate, Color.RED);
+    }
+
+    public static DatePickerSettings getConfigsData() {
+        DatePickerSettings dateSettings = new DatePickerSettings();
+        dateSettings.setFormatForDatesCommonEra("yyyy-MM-dd");
+        dateSettings.setFormatForDatesBeforeCommonEra("uuuu-MM-dd");
+
+        aplicarTemaCalendario(dateSettings);
         return dateSettings;
     }
 

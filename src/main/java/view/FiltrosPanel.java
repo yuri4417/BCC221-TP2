@@ -1,5 +1,6 @@
 package view;
 
+import controller.SistemaController;
 import med.Medicao;
 import static controller.SistemaController.*;
 import javax.swing.*;
@@ -143,22 +144,17 @@ public class FiltrosPanel extends JPanel {
     }
 
     private void apliqueFiltros() {
-        if (limpando) return;
+        if (limpando)
+            return;
 
         try {
             // Captura dados de temperatura
-            Double tMin = null, tMax = null;
-            if (!tempMin.getText().trim().isEmpty())
-                tMin = Double.parseDouble(tempMin.getText().replace(",", "."));
-            if (!tempMax.getText().trim().isEmpty())
-                tMax = Double.parseDouble(tempMax.getText().replace(",", "."));
+            Double tMin = parseDouble(tempMin.getText());
+            Double tMax = parseDouble(tempMax.getText());
 
             // Captura dados de coordenadas
-            Double latIni = null, lonIni = null;
-            if (!latitude.getText().trim().isEmpty())
-                latIni = Double.parseDouble(latitude.getText().replace(",", "."));
-            if (!longitude.getText().trim().isEmpty())
-                lonIni = Double.parseDouble(longitude.getText().replace(",", "."));
+            Double latIni = parseDouble(latitude.getText());
+            Double lonIni = parseDouble(longitude.getText());
 
             double raio = ((Number) raioKm.getValue()).doubleValue();
 
@@ -238,48 +234,16 @@ public class FiltrosPanel extends JPanel {
 
         return medicaoFiltrada;
     }
-    public void trocaTemaCalendario() {
-        Color corFundo = UIManager.getColor("Panel.background");
-        Color corTexto = UIManager.getColor("Label.foreground");
-        Color corFundoSelecionado = UIManager.getColor("Component.focusColor");
 
-        // Junta as configurações dos dois calendários para atualizar de uma vez
+    public void trocaTemaCalendario() {
         DatePickerSettings[] configuracoes = {
                 dataInicio.getDatePicker().getSettings(),
                 dataFim.getDatePicker().getSettings()
         };
+        for (DatePickerSettings dateSettings : configuracoes)
+            SistemaController.aplicarTemaCalendario(dateSettings);
 
-        for (DatePickerSettings dateSettings : configuracoes) {
-            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, corFundo);
-            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, corFundo);
-            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, corFundo);
-            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundClearLabel, corFundo);
-            dateSettings.setColor(DatePickerSettings.DateArea.BackgroundCalendarPanelLabelsOnHover, corFundoSelecionado);
-            dateSettings.setColor(DatePickerSettings.DateArea.TextMonthAndYearMenuLabels, corTexto);
-            dateSettings.setColor(DatePickerSettings.DateArea.TextTodayLabel, corTexto);
-            dateSettings.setColor(DatePickerSettings.DateArea.TextClearLabel, corTexto);
-
-            dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundNormalDates, corFundo);
-            dateSettings.setColor(DatePickerSettings.DateArea.CalendarBackgroundSelectedDate, corFundoSelecionado);
-            dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextNormalDates, corTexto);
-            dateSettings.setColor(DatePickerSettings.DateArea.CalendarTextWeekdays, corTexto);
-            dateSettings.setColorBackgroundWeekdayLabels(corFundo, true);
-
-            // Pega as cores exatas que o FlatLaf usa para os outros JTextFields
-            Color corFundoTexto = UIManager.getColor("TextField.background");
-            Color corTextoTexto = UIManager.getColor("TextField.foreground");
-
-            // Pinta o fundo do campo de texto em todas as situações (válido, inválido, etc)
-            dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundValidDate, corFundoTexto);
-            dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundInvalidDate, corFundoTexto);
-            dateSettings.setColor(DatePickerSettings.DateArea.TextFieldBackgroundVetoedDate, corFundoTexto);
-
-            // Pinta o texto
-            dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextValidDate, corTextoTexto);
-            dateSettings.setColor(DatePickerSettings.DateArea.DatePickerTextInvalidDate, Color.RED); // Fica vermelho se digitar data errada
-        }
-
-        // Força a interface a redesenhar com as novas cores
+        // redesenha as novas cores
         dataInicio.repaint();
         dataFim.repaint();
     }

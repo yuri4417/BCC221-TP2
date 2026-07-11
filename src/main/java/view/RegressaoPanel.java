@@ -59,14 +59,7 @@ public class RegressaoPanel extends JPanel {
         panelOutliers.setLayout(new BoxLayout(panelOutliers, BoxLayout.Y_AXIS));
         panelOutliers.setBorder(BorderFactory.createTitledBorder("Configuração de Outliers"));
 
-        sliderOutlierPercentual = new JSlider(0, 100, 10);
-        sliderOutlierPercentual.setMajorTickSpacing(10);
-        sliderOutlierPercentual.setMinorTickSpacing(5);
-        sliderOutlierPercentual.setPaintTicks(true);
-        sliderOutlierPercentual.setPaintLabels(true);
-
-        sliderOutlierPercentual.setPreferredSize(new Dimension(330, 55));
-
+        sliderOutlierPercentual = criarSlider(0, 100, 10);
 
         labelPercentual = new JLabel(sliderOutlierPercentual.getValue() + "%");
         sliderOutlierPercentual.addChangeListener(e -> {
@@ -80,18 +73,9 @@ public class RegressaoPanel extends JPanel {
         panelResiduo.add(labelPercentual);
         panelResiduo.add(toggleExcluirOutliers);
 
-
-
         JPanel panelLimiteVerde = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-        sliderLimiteVerde = new JSlider(0, 100, 30);
-        sliderLimiteVerde.setMajorTickSpacing(10);
-        sliderLimiteVerde.setMinorTickSpacing(5);
-        sliderLimiteVerde.setPaintTicks(true);
-        sliderLimiteVerde.setPaintLabels(true);
-
-        sliderLimiteVerde.setPreferredSize(new Dimension(330, 55));
-
+        sliderLimiteVerde = criarSlider(0, 100, 30);
         JLabel labelLimiteVerde = new JLabel(sliderLimiteVerde.getValue() + "%");
 
         sliderLimiteVerde.addChangeListener(e ->
@@ -188,5 +172,15 @@ public class RegressaoPanel extends JPanel {
 
     public double getLimiteVerde(){
         return sliderLimiteVerde.getValue();
+    }
+
+    private JSlider criarSlider(int min, int max, int value) {
+        JSlider slider = new JSlider(min, max, value);
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(5);
+        slider.setPaintTicks(true);
+        slider.setPaintLabels(true);
+        slider.setPreferredSize(new Dimension(330, 55));
+        return slider;
     }
 }

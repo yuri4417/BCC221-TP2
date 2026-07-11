@@ -148,11 +148,11 @@ public class MedicoesPanel extends JPanel {
                                         cidadeFormatada.append(Character.toUpperCase(palavra.charAt(0))).append(palavra.substring(1).toLowerCase()).append(" ");
                             }
 
-                            double latitude = Double.parseDouble(stringLatitude.getText().replace(",", "."));
-                            double longitude = Double.parseDouble(stringLongitude.getText().replace(",", "."));
+                            double latitude = SistemaController.parseDouble(stringLatitude.getText());
+                            double longitude = SistemaController.parseDouble(stringLongitude.getText());
                             Coordenada coord = new coords.Coordenada(latitude, longitude);
-                            double temperatura = Double.parseDouble(stringTemp.getText().replace(",", "."));
-                            double consumo = Double.parseDouble(stringConsumo.getText().replace(",", "."));
+                            double temperatura = SistemaController.parseDouble(stringTemp.getText());
+                            double consumo = SistemaController.parseDouble(stringConsumo.getText());
 
                             StringBuilder erro = new StringBuilder();
                             if (!validarCoordenada(coord))
@@ -263,8 +263,8 @@ public class MedicoesPanel extends JPanel {
                             throw new IllegalArgumentException("Ambos os campos precisam ser preenchidos.");
                         }
 
-                        double temperatura = Double.parseDouble(stringTemp.getText().replace(",", "."));
-                        double consumo = Double.parseDouble(stringConsumo.getText().replace(",", "."));
+                        double temperatura = SistemaController.parseDouble(stringTemp.getText());
+                        double consumo = SistemaController.parseDouble(stringConsumo.getText());
 
                         StringBuilder erro = new StringBuilder();
                         if (!validarTemperatura(temperatura))

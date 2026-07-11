@@ -60,8 +60,8 @@ public class GraficoPanel extends JPanel {
             double x = m.getTemperatura();
             double y = m.getConsumoKwh();
 
-            int px = margemEsquerda + (int) ((m.getTemperatura() - gMinX) * escalaX);
-            int py = (altura - margemBase) - (int) ((m.getConsumoKwh() - gMinY) * escalaY);
+            int px = getPixelX(m.getTemperatura(), areaLargura);
+            int py = getPixelY(m.getConsumoKwh(), areaAltura);
             // Se o mouse estiver dentro dessa área.
             if (Math.abs(mouseX - px) <= 6 && Math.abs(mouseY - py) <= 6) {
                 hoverEncontrado = m;
@@ -84,8 +84,8 @@ public class GraficoPanel extends JPanel {
         int areaAlt  = altura - margemTopo - margemBase;
 
         // Desenha um anel em volta do ponto selecionado
-        int pontoX = margemEsquerda + (int) (((medicaoMouse.getTemperatura() - gMinX) / (gMaxX - gMinX)) * areaLarg);
-        int pontoY = (altura - margemBase) - (int) (((medicaoMouse.getConsumoKwh() - gMinY) / (gMaxY - gMinY)) * areaAlt);
+        int pontoX = getPixelX(medicaoMouse.getTemperatura(), areaLarg);
+        int pontoY = getPixelY(medicaoMouse.getConsumoKwh(), areaAlt);
 
         g2.setColor(UIManager.getColor("Label.foreground"));
         g2.drawOval(pontoX - 7, pontoY - 7, 14, 14);
@@ -108,15 +108,8 @@ public class GraficoPanel extends JPanel {
         if (px + boxLarg > largura) px = mouseX - boxLarg - 10;
         if (py + boxAlt > altura) py = mouseY - boxAlt - 10;
 
-        // Fundo da Caixa
-        Color temaPopUp = UIManager.getColor("PopupMenu.background");
-        if (temaPopUp == null) temaPopUp = UIManager.getColor("Panel.background");
-        g2.setColor(new Color(temaPopUp.getRed(), temaPopUp.getGreen(), temaPopUp.getBlue(), 230));
-        g2.fillRoundRect(px, py, boxLarg, boxAlt, 8, 8);
-
-        // Borda da Caixa
-        g2.setColor(UIManager.getColor("Component.borderColor"));
-        g2.drawRoundRect(px, py, boxLarg, boxAlt, 8, 8);
+        // Fundo e Borda da Caixa
+        drawBox(g2, px, py, boxLarg, boxAlt, 230, 8);
 
         // Escreve os textos
         g2.setColor(UIManager.getColor("Label.foreground"));
@@ -226,7 +219,7 @@ public class GraficoPanel extends JPanel {
         int eixoX_py = altura - margemBase;
         //Faz uma regra de três para descobrir exatamente em qual pixel fica o ponto com temperatura = 0
         //Assim, se houver temperaturas negativas, o eixo Y se move dinamicamente para a direita
-        int eixoY_px = margemEsquerda + (int) (((0 - gMinX) / (gMaxX - gMinX)) * areaLargura);
+        int eixoY_px = getPixelX(0, areaLargura);
 
         //drawLine(x1, y1, x2, y2)
         //desenha o eixo x
@@ -239,7 +232,7 @@ public class GraficoPanel extends JPanel {
         //desenha as marcações intermediárias de valores de 5 em 5 (eixo x)
         for (double tick = gMinX; tick <= gMaxX; tick += 5.0) {
             //px indica a posição do traço em x
-            int px = margemEsquerda + (int) (((tick - gMinX) / (gMaxX - gMinX)) * areaLargura);
+            int px = getPixelX(tick, areaLargura);
             g2.drawLine(px, eixoX_py - 4, px, eixoX_py + 4);
             String labelNumero = String.valueOf((int) tick);
             int larguraTexto = g2.getFontMetrics().stringWidth(labelNumero);
@@ -247,7 +240,7 @@ public class GraficoPanel extends JPanel {
         }
         //desenha as marcações intermediárias de valores de 5 em 5 (eixo y)
         for (double tick = gMinY; tick <= gMaxY; tick += gStepY) {
-            int py = (altura - margemBase) - (int) (((tick - gMinY) / (gMaxY - gMinY)) * areaAltura);
+            int py = getPixelY(tick, areaAltura);
             g2.drawLine(eixoY_px - 4, py, eixoY_px + 4, py);
             String labelNumero = String.valueOf((int) tick);
             int larguraTexto = g2.getFontMetrics().stringWidth(labelNumero);
@@ -287,8 +280,8 @@ public class GraficoPanel extends JPanel {
         for (Medicao m: dados){
             double x = m.getTemperatura();
             double y = m.getConsumoKwh();
-            int px = margemEsquerda + (int) (((x - gMinX) / (gMaxX - gMinX)) * areaLarg);
-            int py = (altura - margemBase) - (int) (((y - gMinY) / (gMaxY - gMinY)) * areaAlt);
+            int px = getPixelX(x, areaLarg);
+            int py = getPixelY(y, areaAlt);
             boolean isOutlier = false;
             boolean isGreen = false;
             if(regressao != null){
@@ -318,12 +311,12 @@ public class GraficoPanel extends JPanel {
         //calcula o ponto de partida do grafico
         double y1 = regressao.getB0()+(regressao.getB1() * gMinX);
         int px1 = margemEsquerda;
-        int py1 = (altura-margemBase)-(int)(((y1 - gMinY)/(gMaxY - gMinY))*areaAltura);
+        int py1 = getPixelY(y1, areaAltura);
 
         //calcula o ponto de chegada
         double y2 = regressao.getB0()+(regressao.getB1() * gMaxX);
         int px2 = largura-margemDireita;
-        int py2 = (altura-margemBase)-(int)(((y2 - gMinY)/(gMaxY - gMinY))*areaAltura);
+        int py2 = getPixelY(y2, areaAltura);
 
         //traça a linha que vai do ponto inicial ao final
         g2.setColor(Color.BLUE);
@@ -340,14 +333,14 @@ public class GraficoPanel extends JPanel {
         //linha de limite superior
         double y1Sup = y1 + limiteAbs;
         double y2Sup = y2 + limiteAbs;
-        int py1Sup = (altura - margemBase) - (int) (((y1Sup - gMinY) / (gMaxY - gMinY)) * areaAltura);
-        int py2Sup = (altura - margemBase) - (int) (((y2Sup - gMinY) / (gMaxY - gMinY)) * areaAltura);
+        int py1Sup = getPixelY(y1Sup, areaAltura);
+        int py2Sup = getPixelY(y2Sup, areaAltura);
 
         //linha de limite inferior
         double y1Inf = y1 - limiteAbs;
         double y2Inf = y2 - limiteAbs;
-        int py1Inf = (altura - margemBase) - (int) (((y1Inf - gMinY) / (gMaxY - gMinY)) * areaAltura);
-        int py2Inf = (altura - margemBase) - (int) (((y2Inf - gMinY) / (gMaxY - gMinY)) * areaAltura);
+        int py1Inf = getPixelY(y1Inf, areaAltura);
+        int py2Inf = getPixelY(y2Inf, areaAltura);
 
         //configura o tracejado
         Stroke tracejado = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{8f, 6f}, 0.0f);
@@ -362,13 +355,13 @@ public class GraficoPanel extends JPanel {
         //Limites Verdes
         double y1VerdeSup = y1 + limiteVerdeAbs;
         double y2VerdeSup = y2 + limiteVerdeAbs;
-        int py1VerdeSup = (altura - margemBase) - (int) (((y1VerdeSup - gMinY) / (gMaxY - gMinY)) * areaAltura);
-        int py2VerdeSup = (altura - margemBase) - (int) (((y2VerdeSup - gMinY) / (gMaxY - gMinY)) * areaAltura);
+        int py1VerdeSup = getPixelY(y1VerdeSup, areaAltura);
+        int py2VerdeSup = getPixelY(y2VerdeSup, areaAltura);
 
         double y1VerdeInf = y1 - limiteVerdeAbs;
         double y2VerdeInf = y2 - limiteVerdeAbs;
-        int py1VerdeInf = (altura - margemBase) - (int) (((y1VerdeInf - gMinY) / (gMaxY - gMinY)) * areaAltura);
-        int py2VerdeInf = (altura - margemBase) - (int) (((y2VerdeInf - gMinY) / (gMaxY - gMinY)) * areaAltura);
+        int py1VerdeInf = getPixelY(y1VerdeInf, areaAltura);
+        int py2VerdeInf = getPixelY(y2VerdeInf, areaAltura);
 
         // Criando um padrão tracejado ligeiramente diferente (mais curto) para diferenciar visualmente
         Stroke tracejadoVerde = new BasicStroke(1.2f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{4f, 4f}, 0.0f);
@@ -416,18 +409,7 @@ public class GraficoPanel extends JPanel {
         int legendaX = largura - margemDireita + 60;
         int x = (legendaX + 110) - boxLargura;
 
-        // Desenha o fundo translúcido
-        Color temaPopUp = UIManager.getColor("PopupMenu.background");
-        if (temaPopUp == null) {
-            temaPopUp = UIManager.getColor("Panel.background");
-        }
-        g2.setColor(new Color(temaPopUp.getRed(), temaPopUp.getGreen(), temaPopUp.getBlue(), 220));
-        g2.fillRoundRect(x, y, boxLargura, boxAltura, 10, 10);
-
-        // Desenha a borda
-        g2.setColor(UIManager.getColor("Component.borderColor"));
-        g2.setStroke(new BasicStroke(1));
-        g2.drawRoundRect(x, y, boxLargura, boxAltura, 10, 10);
+        drawBox(g2, x, y, boxLargura, boxAltura, 220, 10);
 
         // Escreve os textos empilhados dentro da caixa
         g2.setColor(UIManager.getColor("Label.foreground"));
@@ -441,16 +423,7 @@ public class GraficoPanel extends JPanel {
         int boxLargura = 110;
         int boxAltura = 105;
 
-        Color temaPopUp = UIManager.getColor("PopupMenu.background");
-        if (temaPopUp == null) {
-            temaPopUp = UIManager.getColor("Panel.background");
-        }
-        g2.setColor(new Color(temaPopUp.getRed(), temaPopUp.getGreen(), temaPopUp.getBlue(), 220));
-        g2.fillRoundRect(x, y, boxLargura, boxAltura, 10, 10);
-
-        g2.setColor(UIManager.getColor("Component.borderColor"));
-        g2.setStroke(new BasicStroke(1));
-        g2.drawRoundRect(x, y, boxLargura, boxAltura, 10, 10);
+        drawBox(g2, x, y, boxLargura, boxAltura, 220, 10);
 
         g2.setFont(new Font("Arial", Font.PLAIN, 11));
 
@@ -507,8 +480,29 @@ public class GraficoPanel extends JPanel {
         return dados.stream().mapToDouble(Medicao::getConsumoKwh).min().orElse(0);
     }
 
+    private int getPixelX(double x, int areaLargura) {
+        return margemEsquerda + (int) (((x - gMinX) / (gMaxX - gMinX)) * areaLargura);
+    }
+
+    private int getPixelY(double y, int areaAltura) {
+        return (altura - margemBase) - (int) (((y - gMinY) / (gMaxY - gMinY)) * areaAltura);
+    }
+
     private double getMaxConsumo() {
         if (dados == null || dados.isEmpty()) return 0;
         return dados.stream().mapToDouble(Medicao::getConsumoKwh).max().orElse(0);
+    }
+
+    private void drawBox(Graphics2D g2, int x, int y, int largura, int altura, int alpha, int raioCurva) {
+        Color temaPopUp = UIManager.getColor("PopupMenu.background");
+        if (temaPopUp == null) {
+            temaPopUp = UIManager.getColor("Panel.background");
+        }
+        g2.setColor(new Color(temaPopUp.getRed(), temaPopUp.getGreen(), temaPopUp.getBlue(), alpha));
+        g2.fillRoundRect(x, y, largura, altura, raioCurva, raioCurva);
+
+        g2.setColor(UIManager.getColor("Component.borderColor"));
+        g2.setStroke(new BasicStroke(1));
+        g2.drawRoundRect(x, y, largura, altura, raioCurva, raioCurva);
     }
 }
