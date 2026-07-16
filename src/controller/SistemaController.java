@@ -28,17 +28,18 @@ public class SistemaController {
         String linha;
         System.out.println("Tentando carregar arquivo");
         MedicaoValidator.resetarErros();
-
         int medicoesValidas = 0;
         int numeroLinha = 0;
         List<String> linhasErros = new ArrayList<>();
 
+        //Abre o arquivo para leitura
         try (BufferedReader br = new BufferedReader(new FileReader(caminhoArquivo))) {
             ArrayList<Medicao> vec = new ArrayList<>();
             br.readLine();
             numeroLinha++;
             while ((linha = br.readLine()) != null) {
                 String[] camposLinha = linha.split("\t");
+                //Se linha contém menos de 6 elementos, quantidade está inválida
                 if (camposLinha.length < 6) {
                     numeroLinha++;
                     linhasErros.add(numeroLinha +": Campos insuficientes.");
@@ -47,6 +48,7 @@ public class SistemaController {
                 try {
                     Medicao temp = new Medicao();
                     //timestamp,cidade,latitude,longitude,temperatura,consumoKwh
+                    //Realiza o parsing da linha, preenchendo a nova medição lida
                     LocalDateTime time = LocalDateTime.parse(camposLinha[0], t.getFormatter());
                     temp.setTimeStamp(time);
                     temp.setCidade(camposLinha[1]);
@@ -56,6 +58,7 @@ public class SistemaController {
                     boolean linhaValida = true;
                     StringBuilder qualErro = new StringBuilder();
 
+                    //Realiza todas as validações da medição lida
                     System.out.printf("Lendo linha: cidade %s %f %n", temp.getCidade(), temp.getTemperatura());
                     if (!MedicaoValidator.validarCoordenada(temp.getCoordenadas())) {
                         linhaValida = false;
@@ -83,6 +86,7 @@ public class SistemaController {
                 }
                 numeroLinha++;
             }
+            //Adiciona os dados válidos
             t.setDados(vec);
             t.atualizarOutliers();
             if (graficoPanel != null) {
@@ -100,6 +104,7 @@ public class SistemaController {
             return false;
         }
 
+        //Caso tenham erros, exibe o JOptionPane com os erros encontrados
         if(!linhasErros.isEmpty()){
             JPanel painelErros = new JPanel(new BorderLayout(0,10));
             JLabel errosEncontrados = new JLabel("Detectados " + linhasErros.size() + " ERRO(S)", SwingConstants.CENTER);
@@ -129,6 +134,7 @@ public class SistemaController {
         return true;
 
     }
+    //Transfere os dados do programa para um arquivo
     public void exportarTSV(String caminhoArquivo, TabelaModel t) throws IOException {
         File arquivo = new File(caminhoArquivo);
         if (!arquivo.getName().toLowerCase().endsWith(".tsv")) {
@@ -138,6 +144,7 @@ public class SistemaController {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(arquivo))) {
             writer.write("timestamp\tcidade\tlatitude\tlongitude\ttemperatura\tconsumoKwh");
             writer.newLine();
+            //pega os dados filtrados para transferir ao arquivo
             for (var m : t.getDadosFiltrados()) {
                 writer.write(String.format(Locale.ROOT,"%s\t%s\t%.4f\t%.4f\t%.1f\t%.0f%n",
                         m.getTimeStamp().format(t.getFormatter()),
@@ -150,6 +157,7 @@ public class SistemaController {
         }
     }
 
+    //Faz o parse, trocando eventuais vírgulas por pontos
     public static Double parseDouble(String texto) throws NumberFormatException {
         if (texto == null || texto.trim().isEmpty())
             return null;
@@ -157,12 +165,13 @@ public class SistemaController {
         return Double.parseDouble(texto.trim().replace(",", "."));
     }
 
+    //Estiliza o calendário para se adaptar ao padrão do sistema
     public static void aplicarTemaCalendario(DatePickerSettings dateSettings) {
         Color corFundo = UIManager.getColor("Panel.background");
         Color corTexto = UIManager.getColor("Label.foreground");
         Color corFundoSelecionado = UIManager.getColor("Component.focusColor");
 
-        // cores da bordad e menu
+        // cores da borda e menu
         dateSettings.setColor(DatePickerSettings.DateArea.BackgroundOverallCalendarPanel, corFundo);
         dateSettings.setColor(DatePickerSettings.DateArea.BackgroundMonthAndYearMenuLabels, corFundo);
         dateSettings.setColor(DatePickerSettings.DateArea.BackgroundTodayLabel, corFundo);

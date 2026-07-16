@@ -4,8 +4,7 @@ import coords.Coordenada;
 
 public class MedicaoValidator {
     public static ErroValidacao erros = new ErroValidacao();
-
-    //LIMITES PARA VALIDAÇÃO DOS DADOS
+    //Limite para validação dos dados
     public static final double LAT_MIN = -90.0;
     public static final double LAT_MAX = 90.0;
     public static final double LON_MIN = -180.0;
@@ -15,15 +14,14 @@ public class MedicaoValidator {
 
     public MedicaoValidator() {}
 
+    //funções de validar dados de acordo com atributos delimitadores
     public static boolean validarCoordenada(Coordenada x) {
         if (x.getLatitude() < LAT_MIN || x.getLatitude() > LAT_MAX || x.getLongitude() < LON_MIN || x.getLongitude() > LON_MAX) {
             erros.incrementarErroCoordenada();
             return false;
         }
         return true;
-
     }
-
     public static boolean validarTemperatura(double temp) {
         if(temp < TEMP_MIN || temp > TEMP_MAX) {
             erros.incrementarErroTemperatura();
@@ -31,7 +29,6 @@ public class MedicaoValidator {
         }
         return true;
     }
-
     public static boolean validarConsumo(double consumo) {
         if (consumo < 0){
             erros.incrementarErroConsumo();

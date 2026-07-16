@@ -74,8 +74,10 @@ public class RegressaoController {
 
         // Se o botão de "Excluir da tabela" estiver ATIVADO
         if (regressaoPanel.isExcluirOutliers()) {
+            //Filtra os dados de acordo com o limite informado
             dadosParaCalculo = removerOutliers(dadosCompletos, limite);
             if (dadosParaCalculo.size() < 2) {
+                //impossível realizar operações se sistema possui menos de 2 valores válidos
                 regressaoPanel.limparResultados();
                 regressaoPanel.exibirMensagensValidacao("Aviso: Após remover outliers, restaram menos de 2 dados.");
 
@@ -119,7 +121,7 @@ public class RegressaoController {
         }
     }
 
-    //filtrar outliers
+    //Remover outliers
     private List<Medicao> removerOutliers(List<Medicao> dados, double limitePercentual) {
         //a detecção de outliers depende do cálculo da própria reta,
         //calcula-se a reta com todos os dados, depois remove os distantes
@@ -144,6 +146,7 @@ public class RegressaoController {
             else
                 erroPercentual = (Math.abs(previsto) > 1e-10) ? Double.MAX_VALUE : 0.0;
 
+            //só adiciona o valor se seu desvio está dentro do limite permitido
             if (erroPercentual <= limitePercentual)
                 dadosFiltrados.add(m);
 

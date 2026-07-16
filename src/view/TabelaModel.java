@@ -16,7 +16,6 @@ public class TabelaModel extends AbstractTableModel {
     private double limiteOutlier;
     private static final DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private double porcentagemLimiteVerde;
-
     public TabelaModel() {
         this.dados = new ArrayList<>();
         this.dadosFiltrados = new ArrayList<>();
@@ -34,11 +33,9 @@ public class TabelaModel extends AbstractTableModel {
                 "Resíduo (%)"
         };
     }
-
     public double getPorcentagemLimiteVerde() {
         return porcentagemLimiteVerde;
     }
-
     public void setPorcentagemLimiteVerde(double porcentagem) {
         this.porcentagemLimiteVerde = porcentagem;
     }
@@ -52,7 +49,6 @@ public class TabelaModel extends AbstractTableModel {
     public int getColumnCount() {
         return colunas.length;
     }
-
     @Override
     public Class<?> getColumnClass(int columnIndex) {
         if (getRowCount() > 0 && getValueAt(0, columnIndex) != null) {
@@ -63,8 +59,7 @@ public class TabelaModel extends AbstractTableModel {
     public List<Medicao> getMedicoes() {
         return this.dados;
     }
-
-    //retorna um valor da tabela de uma determinada coordenada (linha, coluna)
+    //Retorna um valor da tabela de uma determinada coordenada (linha, coluna)
     @Override
     public Object getValueAt(int row, int col) {
         Medicao m = dadosFiltrados.get(row);
@@ -80,33 +75,29 @@ public class TabelaModel extends AbstractTableModel {
             default -> null;
         };
     }
-
     public double getLimiteOutlier() {
         return limiteOutlier;
     }
-
     public boolean getShowOutliers() { return showOutliers;}
-
     public void setShowOutliers(boolean show) {
         if (this.showOutliers == show)
             return;
         this.showOutliers = show;
         atualizarOutliers();
     }
-
     public void setLimiteOutlier(double limite) {
         if (this.limiteOutlier == limite)
             return;
         this.limiteOutlier = limite;
         atualizarOutliers();
     }
-
     public void setDados(List<Medicao> dados) {
         this.dados = dados;
     }
     public void setDadosFiltrados(List<Medicao> dados) {
-        this.dadosFiltrados = dados; }
-    //atribui valor a uma certa coordenada da tabela (linha, coluna)
+        this.dadosFiltrados = dados;
+    }
+    //Atribui valor a uma certa coordenada da tabela (linha, coluna)
     @Override
     public void setValueAt(Object value, int row, int col) {
         Medicao m = dadosFiltrados.get(row);
@@ -114,13 +105,11 @@ public class TabelaModel extends AbstractTableModel {
             m.setTemperatura((Double) value);
         else if (col == 5)
             m.setConsumoKwh((Double) value);
-
     }
     @Override
     public boolean isCellEditable(int row, int col) {
         return col == 4 || col == 5;
     }
-
     @Override
     public String getColumnName(int col) {
         if (col >= 0 && col < colunas.length)
@@ -128,33 +117,31 @@ public class TabelaModel extends AbstractTableModel {
         else
             return "";
     }
-
-    public DateTimeFormatter getFormatter() { return FORMATTER; }
-
+    public DateTimeFormatter getFormatter() {
+        return FORMATTER;
+    }
     public Medicao getMedicao(int row) {
         if (row >= 0 && row < dadosFiltrados.size())
             return dadosFiltrados.get(row);
         return null;
     }
-    public List<Medicao> getDados(){ return dados; }
-
-    public List<Medicao> getDadosFiltrados() {return dadosFiltrados;}
-
+    public List<Medicao> getDados(){
+        return dados;
+    }
+    public List<Medicao> getDadosFiltrados() {
+        return dadosFiltrados;
+    }
     public void atualizarOutliers() {
         dadosFiltrados = (showOutliers) ? new ArrayList<>(dados) : filtrarOutliers(dados);
-
         fireTableDataChanged();
     }
-
     private List<Medicao> filtrarOutliers(List<Medicao> listaDados) {
         List<Medicao> temp = new ArrayList<>();
         for (var m : listaDados)
             if (Math.abs(m.getResiduoPercentual()) <= limiteOutlier)
                 temp.add(m);
-
         return temp;
     }
-
     public void adicionarMedicao(Medicao m) {
         if (dados != null) {
             dados.add(m);

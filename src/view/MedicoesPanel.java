@@ -29,26 +29,21 @@ public class MedicoesPanel extends JPanel {
     private JButton btnRemover;
     private JScrollPane scrollPane;
     private JLabel lblArquivo;
-
     public MedicoesPanel(TabelaModel model) {
         this.tableModel = model != null ? model : new TabelaModel();
         inicializarComponentes();
         inicializarEventos();
     }
-
     private void inicializarComponentes() {
         setLayout(new BorderLayout());
-
         lblArquivo = new JLabel("Nenhum arquivo carregado");
         lblArquivo.setFont(new Font("Segoe UI", Font.BOLD, 14));
         lblArquivo.setBorder(BorderFactory.createEmptyBorder(8, 10, 8, 10));
         add(lblArquivo, BorderLayout.NORTH);
-
         tabela = new JTable(tableModel) {
             @Override
             public void paintComponent(Graphics g) {
                 super.paintComponent(g);
-
                 // Se a tabela estiver vazia, imprime uma mensagem padrao
                 if (getRowCount() == 0) {
                     Graphics2D g2d = (Graphics2D) g.create();
@@ -70,7 +65,6 @@ public class MedicoesPanel extends JPanel {
         };
         tabela.setAutoCreateRowSorter(true); // permite ordenacao pelos campos
         tabela.setFillsViewportHeight(true);
-
         // Configurar renderer para outliers
         TableColumnModel colModel = tabela.getColumnModel();
         for (int i = 0; i < tabela.getColumnCount(); i++) {
@@ -95,6 +89,7 @@ public class MedicoesPanel extends JPanel {
         add(panelBotoes, BorderLayout.SOUTH);
     }
 
+    //Inicializa os Actions listener
     private void inicializarEventos() {
         btnAdicionar.addActionListener(new ActionListener() {
             @Override
@@ -110,7 +105,6 @@ public class MedicoesPanel extends JPanel {
                 stringLatitude.setToolTipText("A latitude deve estar entre " + LAT_MIN + " e " + LAT_MAX);
                 JTextField stringLongitude = new JTextField();
                 stringLongitude.setToolTipText("A longitude deve estar entre " + LON_MIN + " e " + LON_MAX);
-
                 Object[] novaMedicao = {
                         "Data/Hora:", campoData,
                         "Cidade:", stringCidade,
@@ -121,21 +115,17 @@ public class MedicoesPanel extends JPanel {
                 };
                 while (true) {
                     int opcao = JOptionPane.showConfirmDialog(MedicoesPanel.this, novaMedicao, "Adicionar Nova Medição", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
-
                     if (opcao == JOptionPane.OK_OPTION) {
                         try {
                             LocalDateTime dataInserida = null;
                             LocalDate dateIni = campoData.getDatePicker().getDate();
                             LocalTime timeIni = campoData.getTimePicker().getTime();
-
                             if (dateIni != null) {
                                 dataInserida = LocalDateTime.of(dateIni, timeIni != null ? timeIni : LocalTime.MIN);
                             }
                             if (dataInserida == null || stringCidade.getText().trim().isEmpty() || stringLatitude.getText().trim().isEmpty() ||
                                     stringLongitude.getText().trim().isEmpty() || stringTemp.getText().trim().isEmpty() || stringConsumo.getText().trim().isEmpty())
                                 throw new IllegalArgumentException("Todos os campos precisam ser preenchidos.");
-
-
                             Medicao medicao = new Medicao();
                             medicao.setTimeStamp(dataInserida); // Passa a data pronta
 
@@ -147,7 +137,6 @@ public class MedicoesPanel extends JPanel {
                                     if (!palavra.isEmpty())
                                         cidadeFormatada.append(Character.toUpperCase(palavra.charAt(0))).append(palavra.substring(1).toLowerCase()).append(" ");
                             }
-
                             double latitude = SistemaController.parseDouble(stringLatitude.getText());
                             double longitude = SistemaController.parseDouble(stringLongitude.getText());
                             Coordenada coord = new coords.Coordenada(latitude, longitude);
@@ -184,7 +173,8 @@ public class MedicoesPanel extends JPanel {
                         } catch (Exception e) { //Erro desconhecido
                             JOptionPane.showMessageDialog(MedicoesPanel.this, "Erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                         }
-                    } else { //Clicou no x
+                    }
+                    else { //Clicou no x
                         break;
                     }
                 }
@@ -202,7 +192,6 @@ public class MedicoesPanel extends JPanel {
             public void mouseClicked(java.awt.event.MouseEvent e) {
                 // Verifica se foi botão esquerdo e se foram 2 cliques
                 if (e.getClickCount() == 2 && e.getButton() == java.awt.event.MouseEvent.BUTTON1) {
-
                     // Garante que o usuário clicou em uma linha válida e não no espaço vazio da tabela
                     int linhaClicada = tabela.rowAtPoint(e.getPoint());
                     if (linhaClicada != -1) {
@@ -231,11 +220,9 @@ public class MedicoesPanel extends JPanel {
     public void atualizarTabela() {
         tableModel.fireTableDataChanged();
     }
-
     public void setNomeArquivo(String nomeArquivo) {
         lblArquivo.setText("Arquivo: " + nomeArquivo);
     }
-
     private void editRegistro() {
         int linhaSelecionada = tabela.getSelectedRow();
         if (linhaSelecionada == -1) {
@@ -244,7 +231,6 @@ public class MedicoesPanel extends JPanel {
         }
         int linha = tabela.convertRowIndexToModel(linhaSelecionada);
         Medicao medicao = tableModel.getMedicao(linha);
-
         if (medicao != null) {
             JTextField stringTemp = new JTextField(String.valueOf(medicao.getTemperatura()));
             JTextField stringConsumo = new JTextField(String.valueOf(medicao.getConsumoKwh()));
@@ -254,7 +240,6 @@ public class MedicoesPanel extends JPanel {
                     "Nova Temperatura (°C):", stringTemp,
                     "Novo Consumo (kWh):", stringConsumo
             };
-
             while (true) {
                 int opcao = JOptionPane.showConfirmDialog(MedicoesPanel.this, camposEdicao, "Editar Medição", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
                 if (opcao == JOptionPane.OK_OPTION) {
@@ -262,7 +247,6 @@ public class MedicoesPanel extends JPanel {
                         if (stringTemp.getText().trim().isEmpty() || stringConsumo.getText().trim().isEmpty()) {
                             throw new IllegalArgumentException("Ambos os campos precisam ser preenchidos.");
                         }
-
                         double temperatura = SistemaController.parseDouble(stringTemp.getText());
                         double consumo = SistemaController.parseDouble(stringConsumo.getText());
 
@@ -273,10 +257,8 @@ public class MedicoesPanel extends JPanel {
                             erro.append("- O consumo não pode ser negativo.\n");
                         if (erro.length() > 0)
                             throw new IllegalArgumentException(erro.toString());
-
                         medicao.setTemperatura(temperatura);
                         medicao.setConsumoKwh(consumo);
-
                         tableModel.atualizarOutliers();
 
                         int novaLinhaView = tabela.convertRowIndexToView(linha);
@@ -291,17 +273,16 @@ public class MedicoesPanel extends JPanel {
                     } catch (Exception e) {
                         JOptionPane.showMessageDialog(MedicoesPanel.this, "Erro inesperado: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
                     }
-                } else {
+                }
+                else {
                     break;
                 }
             }
         }
     }
-
     public int[] getLinhasSelecionadas() {
         return tabela.getSelectedRows();
     }
-
     public void limparSelecao() {
         tabela.clearSelection();
     }
@@ -309,15 +290,12 @@ public class MedicoesPanel extends JPanel {
     public TabelaModel getTableModel() {
         return tableModel;
     }
-
     public JButton getBtnAdicionar() {
         return btnAdicionar;
     }
-
     public JButton getBtnRemover() {
         return btnRemover;
     }
-
     public void setTableModel(TabelaModel tableModel) {
         this.tableModel = tableModel;
         tabela.setModel((TableModel) tableModel);
@@ -326,11 +304,9 @@ public class MedicoesPanel extends JPanel {
         for (int i = 1; i < tabela.getColumnCount(); i++) {
             colModel.getColumn(i).setCellRenderer(new OutlierTableCellRenderer());
         }
-
         tabela.revalidate();
         tabela.repaint();
     }
-
     public TabelaModel getTabelaModel(){
         return tableModel;
     }

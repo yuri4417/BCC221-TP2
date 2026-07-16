@@ -47,9 +47,27 @@ com destaque visual para medições outliers.
 ### Pré-requisitos
 * Java Development Kit (JDK) instalado.
 
-MUDAR AQUI
-
 ### Passos
-1. Clone este repositório:
+Para compilar o código diretamente via terminal, utilize os seguintes comandos:
+1. Crie uma pasta para armazenar os arquivos compilados
    ```bash
-   git clone [insira-o-link-do-seu-repositorio-aqui]
+   mkdir -p bin # Linux/Mac
+   mkdir bin    # Windows
+2. Compile os arquivos .java:
+   ```bash
+   # Linux/Mac
+   javac -d bin -cp "lib/*" $(find src -name "*.java") 
+   # Windows, PowerShell
+   javac -d bin -cp "lib/*" (gci src -Recurse -Filter *.java).FullName 
+3. Copie a pasta de imagens para a pasta bin (Opcional, mas pular este passo implica no não-carregamento dos ícones da interface):
+   ```bash
+   # Linux/Mac
+   cp -r src/images bin/
+   # Windows
+   xcopy src\images bin\images /E /I /Y
+4. Execute o programa:
+   ```bash
+   # Linux/Mac
+   java -cp "bin:lib/*" Main
+   # Windows
+   java -cp "bin;lib\*" Main

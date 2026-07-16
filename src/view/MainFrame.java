@@ -13,7 +13,7 @@ import controller.RegressaoController;
 import controller.SistemaController;
 public class MainFrame extends JFrame{
     private Dimension tamanhoTela;
-    //opções "globais"
+    //Opções "globais"
     private JPanel sideBar;
     private JTabbedPane panels;
     private MedicoesPanel medicoesPanel;
@@ -24,12 +24,12 @@ public class MainFrame extends JFrame{
     private RegressaoController regressaoController;
     private SistemaController sistemaController;
 
-    //arquivos
+    //Arquivos
     private JButton carregaTSV;
     private JButton exportaTSV;
-    //filtros
+    //Filtros
     private JButton limparFiltros;
-    //tema
+    //Tema
     private JButton temaClaro;
     private JButton temaEscuro;
 
@@ -38,20 +38,20 @@ public class MainFrame extends JFrame{
         setTitle("BCC 221 - POO | Sistema de Previsão de Consumo Energético");
         setTamanhoTela();
         if((tamanhoTela.width/1.25) <= 1350 || (tamanhoTela.height/1.25-40)<=680)
-            setExtendedState(JFrame.MAXIMIZED_BOTH); // abre o com tela cheia
+            setExtendedState(JFrame.MAXIMIZED_BOTH); // Abre o com tela cheia
         else {
-            //o Math min pega o menor valor, caso 80% seja menor que 1300 pixel o tamanho é iniciado com o tamanho da tela
+            //O Math min pega o menor valor, caso 80% seja menor que 1300 pixel o tamanho é iniciado com o tamanho da tela
             int larguraTela = (int) Math.min(1500, (tamanhoTela.width / 1.25));
             int alturaTela = (int) Math.min(1000, (tamanhoTela.height / 1.25) - 40); // -40 para caso tiver no windows não cobrir a barra de tarefas
-            //tamanho que a janela vai iniciar
+            //Tamanho que a janela vai iniciar
             setSize(larguraTela, alturaTela);
         }
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // limite minimo da janela, caso a tela seja menor que o minimo será iniciada com o tamanho da tela
+        // Limite minimo da janela, caso a tela seja menor que o minimo será iniciada com o tamanho da tela
         setMinimumSize(new Dimension((int ) 1350, 680));
 
-        //icone principal do programa para barra de tarefas
+        //Icone principal do programa para barra de tarefas
         ImageIcon iconPath = carregaIcon("/images/regression.png", 32, 32);
         if (iconPath != null) {
             setIconImage(iconPath.getImage());
@@ -72,7 +72,6 @@ public class MainFrame extends JFrame{
         this.add(panels, BorderLayout.CENTER);
 
         setVisible(true);
-
     }
     private void inicializarComponentes() {
         panels = new JTabbedPane();
@@ -103,7 +102,7 @@ public class MainFrame extends JFrame{
         appTitle.setBorder(BorderFactory.createEmptyBorder(0, 5, 30, 0));
         sideBar.add(appTitle);
 
-//        Botoes
+        // Botoes
         carregaTSV = new JButton("Carregar TSV", carregaIcon("/images/dark/folder.png", 20, 20));
         exportaTSV = new JButton("Salvar TSV", carregaIcon("/images/dark/disket.png", 20, 20));
         limparFiltros = new JButton("Limpar Filtros", carregaIcon("/images/dark/broom.png", 20, 20));
@@ -115,7 +114,7 @@ public class MainFrame extends JFrame{
             estilizarBotaoSidebar(btn);
         }
 
-        // --- Montagem da Sidebar ---
+        // Estrutura da Sidebar
         JLabel lblArquivos = new JLabel("ARQUIVO");
         estilizarHeader(lblArquivos);
         sideBar.add(lblArquivos);
@@ -150,13 +149,14 @@ public class MainFrame extends JFrame{
         statusOutliers.setBorder(BorderFactory.createEmptyBorder(0, 5, 10, 0));
         sideBar.add(statusOutliers);
     }
+
+    // Estilo da Sidebar
     private void estilizarBotaoSidebar(JButton btn) {
         btn.setMaximumSize(new Dimension(Integer.MAX_VALUE, 40));
         btn.setHorizontalAlignment(SwingConstants.LEFT);
         btn.setFocusPainted(false);
         btn.setCursor(new Cursor(Cursor.HAND_CURSOR));
         btn.setFont(new Font("Segoe UI", Font.PLAIN, 14));
-
         btn.putClientProperty("JButton.buttonType", "borderless");
         btn.putClientProperty("JButton.arc", 15);
     }
@@ -164,19 +164,19 @@ public class MainFrame extends JFrame{
     private void atualizarTextoOutlier() {
         boolean ocultos = regressaoPanel.getToggleExcluirOutliers().isSelected();
         int percentual = (int) regressaoPanel.getLimiteOutlierPercentual();
-
         String cor = ocultos ? "#d9534f" : "#5cb85c";
         String textoVisibilidade = ocultos ? "Ocultos" : "Visíveis";
-
         statusOutliers.setText("<html>Outliers: <font color='" + cor + "'><b>" + textoVisibilidade +
                 "</b></font> | Resíduo: <b>" + percentual + "%</b></html>");
     }
+
     private void estilizarHeader(JLabel label) {
         label.setFont(new Font("Segoe UI", Font.BOLD, 12));
         label.setForeground(UIManager.getColor("Label.disabledForeground"));
         label.setBorder(BorderFactory.createEmptyBorder(0, 5, 10, 0));
     }
 
+    //Inicializa os Actions listener
     private void inicializarEventos() {
         carregaTSV.addActionListener(e -> {
                 JFileChooser seletorArquivo = new JFileChooser();
@@ -203,7 +203,6 @@ public class MainFrame extends JFrame{
             fileChooser.setDialogTitle("Exportar dados para TSV");
             fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("Arquivos TSV (*.tsv)", "tsv"));
             fileChooser.setAcceptAllFileFilterUsed(false);
-
             int selecionado = fileChooser.showSaveDialog(MainFrame.this);
             if (selecionado == JFileChooser.APPROVE_OPTION) {
                 File arquivoSelecionado = fileChooser.getSelectedFile();
@@ -230,6 +229,7 @@ public class MainFrame extends JFrame{
                 System.out.println("Filtros limpos.");
             }
         });
+
         temaClaro.addActionListener(e -> trocarTema(new FlatMacLightLaf(), "light"));
         temaEscuro.addActionListener(e -> trocarTema(new FlatMacDarkLaf(), "dark"));
 
@@ -248,6 +248,8 @@ public class MainFrame extends JFrame{
             medicoesPanel.getTabelaModel().fireTableDataChanged();
         });
     }
+
+    //Função responsavel pela troca de Temas (Claro, escuro)
     private void trocarTema(LookAndFeel laf, String tema) {
         try {
             UIManager.setLookAndFeel(laf);
@@ -268,6 +270,7 @@ public class MainFrame extends JFrame{
             JOptionPane.showMessageDialog(null, "Erro ao mudar o tema: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
         }
     }
+
     public ImageIcon carregaIcon(String filePath, int largura, int altura) {
         URL iconPath = SistemaController.class.getResource(filePath);
         if (iconPath != null) {
@@ -286,7 +289,8 @@ public class MainFrame extends JFrame{
         }
         return null;
     }
-    //getters
+
+    //Getters
     public MedicoesPanel getMedicoesPanel() { return medicoesPanel; }
     public FiltrosPanel getFiltrosPanel() { return filtrosPanel; }
     public RegressaoPanel getRegressaoPanel() { return regressaoPanel; }

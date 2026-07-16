@@ -18,7 +18,6 @@ public class RegressaoPanel extends JPanel {
     public RegressaoPanel() {
         inicializarComponentes();
     }
-
     private void inicializarComponentes() {
         setLayout(new BorderLayout());
 
@@ -53,7 +52,6 @@ public class RegressaoPanel extends JPanel {
         panelResultados.add(panelLabels, BorderLayout.CENTER);
         panelResultados.add(panelBarra, BorderLayout.SOUTH);
 
-
         //Painel de outliers
         JPanel panelOutliers = new JPanel();
         panelOutliers.setLayout(new BoxLayout(panelOutliers, BoxLayout.Y_AXIS));
@@ -81,7 +79,6 @@ public class RegressaoPanel extends JPanel {
         sliderLimiteVerde.addChangeListener(e ->
                 labelLimiteVerde.setText(sliderLimiteVerde.getValue() + "%")
         );
-
         panelLimiteVerde.add(new JLabel("Zona de Proximidade (% do limite):"));
         panelLimiteVerde.add(sliderLimiteVerde);
         panelLimiteVerde.add(labelLimiteVerde);
@@ -96,7 +93,6 @@ public class RegressaoPanel extends JPanel {
         JScrollPane scrollErros = new JScrollPane(txtAreaErros);
         scrollErros.setBorder(BorderFactory.createTitledBorder("Mensagens de Validação"));
 
-
         JPanel panelCentro = new JPanel(new BorderLayout());
         panelCentro.add(panelResultados, BorderLayout.NORTH);
         panelCentro.add(panelOutliers, BorderLayout.CENTER);
@@ -104,76 +100,71 @@ public class RegressaoPanel extends JPanel {
         add(panelCentro, BorderLayout.NORTH);
         add(scrollErros, BorderLayout.CENTER);
     }
-
-    //atualiza os resultados mostrados
+    //Atualiza os resultados mostrados
     public void atualizarResultados(double beta0, double beta1, double r2, int n) {
         labelB0.setText(String.format("β₀: %.4f", beta0));
         labelB1.setText(String.format("β₁: %.4f", beta1));
         labelR2.setText(String.format("R²: %.4f", r2));
         labelN.setText(String.format("N: %d", n));
 
-        //atualiza a barra de progresso (convertendo R2 que geralmente é de 0 a 1 para porcentagem 0 a 100)
+        //Atualiza a barra de progresso (convertendo R2 que geralmente é de 0 a 1 para porcentagem 0 a 100)
         int r2Percentual = (int) Math.round(r2 * 100);
 
-        //garante que o valor não passe de 100 ou fique negativo
+        //Garante que o valor não passe de 100 ou fique negativo
         r2Percentual = Math.max(0, Math.min(100, r2Percentual));
 
         barraR2.setValue(r2Percentual);
         barraR2.setString(String.format("%.1f %%", r2 * 100)); // Mostra o valor exato dentro da barra
         if (r2 <= 0.5) {
             barraR2.setForeground(Color.BLUE); // Azul r2 <50%
-        } else if (r2 <= 0.8) {
+        }
+        else if (r2 <= 0.8) {
             barraR2.setForeground(Color.YELLOW); // Amarelo r2 <=80%
-        } else {
+        }
+        else {
             barraR2.setForeground(Color.RED); // Vermelho r2 >80%
         }
     }
-
-    //limpa os resultados
+    //Limpa os resultados
     public void limparResultados() {
         labelB0.setText("β₀: --");
         labelB1.setText("β₁: --");
         labelR2.setText("R²: --");
         labelN.setText("N: --");
-
-        //reseta a barra de progresso
+        //Reseta a barra de progresso
         barraR2.setValue(0);
         barraR2.setString("-- %");
         barraR2.setForeground(UIManager.getColor("ProgressBar.foreground"));//
     }
-
     public JSlider getSliderOutlier() {
         return sliderOutlierPercentual;
     }
-    //pega a porcentagem determinada pelo slider
+    //Pega a porcentagem determinada pelo slider
     public double getLimiteOutlierPercentual() {
         return sliderOutlierPercentual.getValue();
     }
-
-    //retorna se a opção de excluir outliers está selecionada ou não
+    //Retorna se a opção de excluir outliers está selecionada ou não
     public boolean isExcluirOutliers() {
         return toggleExcluirOutliers.isSelected();
     }
-
-    //preenche a área de mensagens de erro com a mensagem especificada
+    //Preenche a área de mensagens de erro com a mensagem especificada
     public void exibirMensagensValidacao(String mensagem) {
         txtAreaErros.setText(mensagem);
     }
-
     //retorna o próprio slider
-    public JSlider getSliderOutlierPercentual() { return sliderOutlierPercentual; }
-
-    //retorna o próprio botão de excluir outliers
-    public JToggleButton getToggleExcluirOutliers() { return toggleExcluirOutliers; }
-
+    public JSlider getSliderOutlierPercentual() {
+        return sliderOutlierPercentual;
+    }
+    //Retorna o próprio botão de excluir outliers
+    public JToggleButton getToggleExcluirOutliers() {
+        return toggleExcluirOutliers;
+    }
     public JSlider getSliderLimiteVerde() {
         return sliderLimiteVerde;
     }
-
     public double getLimiteVerde(){
         return sliderLimiteVerde.getValue();
     }
-
     private JSlider criarSlider(int min, int max, int value) {
         JSlider slider = new JSlider(min, max, value);
         slider.setMajorTickSpacing(10);

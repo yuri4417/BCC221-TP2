@@ -9,7 +9,7 @@ public class ErroValidacao {
     private int linhasValidas;
     private int errosTotais;
     public ErroValidacao() {
-        //contrutor que usa função de resetar dados
+        //Contrutor que usa função de resetar dados
         resetar();
     }
 
@@ -76,5 +76,7 @@ public class ErroValidacao {
     public int getLinhasValidas() {
         return linhasValidas;
     }
-    public int getErrosTotais() {return errosTotais;}
+    public int getErrosTotais() {
+        return errosTotais;
+    }
 }

@@ -11,30 +11,22 @@ public class OutlierTableCellRenderer extends DefaultTableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
         int modelColumn = table.convertColumnIndexToModel(column);
         Object valorFormatado = value;
-
         if ((modelColumn == 6 || modelColumn == 7) && value instanceof Double) {
             valorFormatado = String.format("%.2f", (Double) value);
         }
-
         Component c = super.getTableCellRendererComponent(table, valorFormatado, isSelected, hasFocus, row, column);
-
         TabelaModel model = (TabelaModel) table.getModel();
         int modelRow = table.convertRowIndexToModel(row);
         Medicao m = model.getMedicao(modelRow);
-
         if (m != null) {
             double limite = model.getLimiteOutlier();
-
-            //determina o "limite baixo"
+            //Determina o "limite baixo"
             double limiteVerde = limite * model.getPorcentagemLimiteVerde();
-
-            //salva o residuo de cada registro
+            //Salva o residuo de cada registro
             double residuoAbsoluto = Math.abs(m.getResiduoPercentual());
-
-            //Outliers (Vermelho): Resíduo maior que o limite
+            //Outliers: Resíduo maior que o limite
             if (residuoAbsoluto > limite) {
                 if (isSelected) {
                     c.setBackground(new Color(255, 150, 150)); // Vermelho mais escuro (selecionado)
@@ -44,7 +36,7 @@ public class OutlierTableCellRenderer extends DefaultTableCellRenderer {
                     c.setForeground(new Color(150, 0, 0));     // Texto vermelho escuro
                 }
             }
-            //Ótimos (Verde): Resíduo menor ou igual ao limite verde
+            //Ótimos: Resíduo menor ou igual ao limite verde
             else if (residuoAbsoluto <= limiteVerde) {
                 if (isSelected) {
                     c.setBackground(new Color(150, 255, 150)); // Verde mais escuro (selecionado)
@@ -54,7 +46,7 @@ public class OutlierTableCellRenderer extends DefaultTableCellRenderer {
                     c.setForeground(new Color(0, 120, 0));     // Texto verde escuro
                 }
             }
-            //Médios (Cor Padrão): O que sobrou entre o limite verde e o limite vermelho
+            //Médios : O que sobrou entre o limite verde e o limite vermelho
             else {
                 if (isSelected) {
                     c.setBackground(table.getSelectionBackground());

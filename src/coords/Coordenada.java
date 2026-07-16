@@ -5,7 +5,6 @@ import static java.lang.Math.*;
 public class Coordenada {
 
     private static final double RAIO_TERRA_KM = 6371.0;
-
     private double latitude;
     private double longitude;
     

@@ -18,7 +18,6 @@ public class GraficoPanel extends JPanel {
     private double limiteAbsoluto;
     //Borda que define o tamanho maximo do grafico
     //Define o tamanho do recuo
-    //ex: margemEsquerda define uma área de 60 pixels livres à esquerda do gráfico
     private int margemEsquerda = 60;
     private int margemDireita = 230;
     private int margemTopo = 40;
@@ -35,7 +34,6 @@ public class GraficoPanel extends JPanel {
 
     public GraficoPanel() {
         setPreferredSize(new Dimension(800, 500));
-
         addMouseMotionListener(new MouseMotionAdapter() {
             @Override
             public void mouseMoved(MouseEvent e){
@@ -68,7 +66,6 @@ public class GraficoPanel extends JPanel {
                 break;
             }
         }
-
         // Se o mouse entrou ou saiu de um ponto.
         if (medicaoMouse != hoverEncontrado) {
             medicaoMouse = hoverEncontrado;
@@ -124,7 +121,8 @@ public class GraficoPanel extends JPanel {
         this.limiteVerde = limiteVerde;
 
         double media = dados.stream().mapToDouble(Medicao::getConsumoKwh).average().orElse(1.0);
-        if (Math.abs(media) < 1e-10) media = 1.0;
+        if (Math.abs(media) < 1e-10)
+            media = 1.0;
         this.limiteAbsoluto = (limiteOutlier / 100.0) * media;
 
         repaint();
@@ -205,31 +203,30 @@ public class GraficoPanel extends JPanel {
     }
 
     private void desenharEixos(Graphics2D g2) {
-        //define a cor como padrão do sistema
+        //Define a cor como padrão do sistema
         g2.setColor(UIManager.getColor("Label.foreground"));
-        //define a espessura da linha do grafico
+        //Define a espessura da linha do grafico
         g2.setStroke(new BasicStroke(2));
 
-        //calcula o tamanho da area dedicada ao grafico
-        //área útil é igual à (medidas totais - medidas das margens)
+        //Calcula o tamanho da area dedicada ao grafico
+        //Área útil é igual à medidas totais - medidas das margens
         int areaLargura = largura - margemEsquerda - margemDireita;
         int areaAltura = altura - margemTopo - margemBase;
 
-        //descobre a altura em pixels onde a linha horizontal do eixo X vai passar
+        //Descobre a altura em pixels onde a linha horizontal do eixo X vai passar
         int eixoX_py = altura - margemBase;
         //Faz uma regra de três para descobrir exatamente em qual pixel fica o ponto com temperatura = 0
         //Assim, se houver temperaturas negativas, o eixo Y se move dinamicamente para a direita
         int eixoY_px = getPixelX(0, areaLargura);
 
         //drawLine(x1, y1, x2, y2)
-        //desenha o eixo x
+        //Desenha o eixo x
         g2.drawLine(margemEsquerda, eixoX_py, largura - margemDireita, eixoX_py); // Linha X (Base Dinâmica)
-        //desenha o eixo y
+        //Desenha o eixo y
         g2.drawLine(eixoY_px, margemTopo, eixoY_px, altura - margemBase);       // Linha Y (Zero Graus)
-
         g2.setFont(new Font("Arial", Font.PLAIN, 11));
 
-        //desenha as marcações intermediárias de valores de 5 em 5 (eixo x)
+        //Desenha as marcações intermediárias de valores de 5 em 5 (eixo x)
         for (double tick = gMinX; tick <= gMaxX; tick += 5.0) {
             //px indica a posição do traço em x
             int px = getPixelX(tick, areaLargura);
@@ -238,7 +235,7 @@ public class GraficoPanel extends JPanel {
             int larguraTexto = g2.getFontMetrics().stringWidth(labelNumero);
             g2.drawString(labelNumero, px - (larguraTexto / 2), eixoX_py + 20);
         }
-        //desenha as marcações intermediárias de valores de 5 em 5 (eixo y)
+        //Desenha as marcações intermediárias de valores de 5 em 5 (eixo y)
         for (double tick = gMinY; tick <= gMaxY; tick += gStepY) {
             int py = getPixelY(tick, areaAltura);
             g2.drawLine(eixoY_px - 4, py, eixoY_px + 4, py);
@@ -251,10 +248,10 @@ public class GraficoPanel extends JPanel {
                 ajusteY = 4;
             g2.drawString(labelNumero, eixoY_px - larguraTexto - 8, py + ajusteY);
         }
-        //escreve nomes dos eixos
+        //Escreve nomes dos eixos
         g2.setFont(new Font("Arial", Font.BOLD, 12));
         g2.drawString("Temperatura (°C)", largura / 2 - 40, altura - 10);
-        //rotaciona pra escrever na vertical
+        //Rotaciona pra escrever na vertical
         g2.rotate(-Math.PI / 2);
         g2.drawString("Consumo (kWh)", -altura / 2 - 40, 20);
         g2.rotate(Math.PI / 2);
@@ -263,20 +260,15 @@ public class GraficoPanel extends JPanel {
     private void desenharPontos(Graphics2D g2) {
         if(dados == null || dados.isEmpty())
             return;
-
         //Define a area para desenhar os pontos
         int areaLarg = largura - margemEsquerda - margemDireita;
         int areaAlt  = altura - margemTopo - margemBase;
-
         double mediaY = limiteAbsoluto;
-
         //Impede que a divisao no limiteAbs utilize zero ou numero muito proximo de 0
         if (Math.abs(mediaY) < 1e-10)
             mediaY = 1.0;
-
         //Converte a porcentagem num limite com base na media
         double limiteAbs = (limiteOutlier / 100.0) * mediaY;
-
         for (Medicao m: dados){
             double x = m.getTemperatura();
             double y = m.getConsumoKwh();
@@ -308,17 +300,17 @@ public class GraficoPanel extends JPanel {
             return;
         int areaAltura = altura-margemTopo-margemBase;
 
-        //calcula o ponto de partida do grafico
+        //Calcula o ponto de partida do grafico
         double y1 = regressao.getB0()+(regressao.getB1() * gMinX);
         int px1 = margemEsquerda;
         int py1 = getPixelY(y1, areaAltura);
 
-        //calcula o ponto de chegada
+        //Calcula o ponto de chegada
         double y2 = regressao.getB0()+(regressao.getB1() * gMaxX);
         int px2 = largura-margemDireita;
         int py2 = getPixelY(y2, areaAltura);
 
-        //traça a linha que vai do ponto inicial ao final
+        //Traça a linha que vai do ponto inicial ao final
         g2.setColor(Color.BLUE);
         g2.setStroke(new BasicStroke(2.5f));
         g2.drawLine(px1, py1, px2, py2);
@@ -330,25 +322,25 @@ public class GraficoPanel extends JPanel {
         double limiteAbs = (limiteOutlier / 100.0) * mediaY;
         double limiteVerdeAbs = (limiteVerde / 100.0) * limiteAbs;
 
-        //linha de limite superior
+        //Linha de limite superior
         double y1Sup = y1 + limiteAbs;
         double y2Sup = y2 + limiteAbs;
         int py1Sup = getPixelY(y1Sup, areaAltura);
         int py2Sup = getPixelY(y2Sup, areaAltura);
 
-        //linha de limite inferior
+        //Linha de limite inferior
         double y1Inf = y1 - limiteAbs;
         double y2Inf = y2 - limiteAbs;
         int py1Inf = getPixelY(y1Inf, areaAltura);
         int py2Inf = getPixelY(y2Inf, areaAltura);
 
-        //configura o tracejado
+        //Configura o tracejado
         Stroke tracejado = new BasicStroke(1.5f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10.0f, new float[]{8f, 6f}, 0.0f);
         g2.setStroke(tracejado);
         Color corTema = UIManager.getColor("Label.foreground");
         g2.setColor(new Color(corTema.getRed(), corTema.getGreen(), corTema.getBlue(), 120));
 
-        //desenha as duas linhas
+        //Desenha as duas linhas
         g2.drawLine(px1, py1Sup, px2, py2Sup);
         g2.drawLine(px1, py1Inf, px2, py2Inf);
 
@@ -371,25 +363,11 @@ public class GraficoPanel extends JPanel {
         // Desenha as duas retas limites do "corredor verde"
         g2.drawLine(px1, py1VerdeSup, px2, py2VerdeSup);
         g2.drawLine(px1, py1VerdeInf, px2, py2VerdeInf);
-
     }
 
     private void desenharEquacao(Graphics2D g2) {
-        /*if (regressao == null)
-            return;
-
-        g2.setColor(UIManager.getColor("Label.foreground"));
-        g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
-
-        String eq = String.format("y = %.4f x + %.4f", regressao.getB1(), regressao.getB0());
-        String r2 = String.format("R² = %.4f", regressao.getR2());
-
-        g2.drawString(eq,15,altura-30);
-        g2.drawString(r2,15,altura-15);
-        */
         if (regressao == null)
             return;
-
         g2.setFont(new Font("Monospaced", Font.PLAIN, 12));
 
         String eq = String.format("y = %.4fx + %.4f", regressao.getB1(), regressao.getB0());
@@ -417,6 +395,7 @@ public class GraficoPanel extends JPanel {
         g2.drawString(r2, x + 10, y + 40);
     }
 
+    // Função responsável por desenhar a legenda que explica o que é cada item do gráfico
     private void desenharLegenda(Graphics2D g2) {
         int x = largura-margemDireita+60;
         int y = margemTopo;
@@ -500,7 +479,6 @@ public class GraficoPanel extends JPanel {
         }
         g2.setColor(new Color(temaPopUp.getRed(), temaPopUp.getGreen(), temaPopUp.getBlue(), alpha));
         g2.fillRoundRect(x, y, largura, altura, raioCurva, raioCurva);
-
         g2.setColor(UIManager.getColor("Component.borderColor"));
         g2.setStroke(new BasicStroke(1));
         g2.drawRoundRect(x, y, largura, altura, raioCurva, raioCurva);

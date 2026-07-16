@@ -44,10 +44,8 @@ public class FiltrosPanel extends JPanel {
     public FiltrosPanel() {
         setLayout(new GridLayout(5, 1, 10, 10));
         setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
         inicializarComponentes();
         configurarListeners();
-
         limparFiltrosUI();
     }
 
@@ -65,7 +63,6 @@ public class FiltrosPanel extends JPanel {
         longitude.setText("");
 
         raioKm.setValue(10);
-
         limpando = false;
     }
 
@@ -133,7 +130,6 @@ public class FiltrosPanel extends JPanel {
 
     private void configurarListeners() {
         btnAplicar.addActionListener(e -> apliqueFiltros());
-
         btnLimpar.addActionListener(e -> {
             limparFiltrosUI();
             if (tabelaModel != null) {
@@ -146,7 +142,6 @@ public class FiltrosPanel extends JPanel {
     private void apliqueFiltros() {
         if (limpando)
             return;
-
         try {
             // Captura dados de temperatura
             Double tMin = parseDouble(tempMin.getText());
@@ -155,10 +150,9 @@ public class FiltrosPanel extends JPanel {
             // Captura dados de coordenadas
             Double latIni = parseDouble(latitude.getText());
             Double lonIni = parseDouble(longitude.getText());
-
             double raio = ((Number) raioKm.getValue()).doubleValue();
 
-            // ATUALIZADO: Captura inteligente de Data e Hora
+            // Captura de Data e Hora
             LocalDateTime inicio = null;
             LocalDateTime fim = null;
 
@@ -174,21 +168,17 @@ public class FiltrosPanel extends JPanel {
             if (dateIni != null) {
                 inicio = LocalDateTime.of(dateIni, timeIni != null ? timeIni : LocalTime.MIN);
             }
-
             // Regra para Data Final
             if (dateFim != null) {
                 fim = LocalDateTime.of(dateFim, timeFim != null ? timeFim : LocalTime.MAX);
             }
-
             // Impede a aplicação se nenhum filtro foi definido
             if (tMin == null && tMax == null && latIni == null && lonIni == null && inicio == null && fim == null) {
                 throw new IllegalArgumentException("Nenhum campo preenchido.");
             }
-
             // Envia para o TabelaModel e atualiza a tela
             tabelaModel.setDadosFiltrados(verificarFiltros(inicio, fim, tMin, tMax, latIni, lonIni, raio));
             tabelaModel.fireTableDataChanged();
-
         } catch (NumberFormatException e) {
             JOptionPane.showMessageDialog(this, "Por favor, insira apenas valores válidos nos campos numéricos.", "Erro de formato", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException e) {
@@ -198,11 +188,9 @@ public class FiltrosPanel extends JPanel {
 
     public List<Medicao> verificarFiltros(LocalDateTime inicio, LocalDateTime fim, Double tMin, Double tMax, Double latInicial, Double lonInicial, double raioKm) {
         List<Medicao> medicaoFiltrada = new ArrayList<>();
-
         for (Medicao m : listaRegistros) {
             boolean passaFiltro = true;
-
-            // Filtros de tempo (compara LocalDateTime completo)
+            // Filtros de tempo
             if (inicio != null && m.getTimeStamp().isBefore(inicio))
                 passaFiltro = false;
             if (fim != null && m.getTimeStamp().isAfter(fim))
@@ -218,20 +206,16 @@ public class FiltrosPanel extends JPanel {
             if (passaFiltro && latInicial != null && lonInicial != null) {
                 double latMedicao = m.getCoordenadas().getLatitude();
                 double lonMedicao = m.getCoordenadas().getLongitude();
-
                 double distanciaReal = Coordenada.calcularDistancia(latInicial, lonInicial, latMedicao, lonMedicao);
-
                 if (distanciaReal > raioKm) {
                     passaFiltro = false;
                 }
             }
-
             // Se passou por todas as barreiras dos filtros ativos, adiciona à lista filtrada
             if (passaFiltro) {
                 medicaoFiltrada.add(m);
             }
         }
-
         return medicaoFiltrada;
     }
 
@@ -243,7 +227,7 @@ public class FiltrosPanel extends JPanel {
         for (DatePickerSettings dateSettings : configuracoes)
             SistemaController.aplicarTemaCalendario(dateSettings);
 
-        // redesenha as novas cores
+        // Redesenha as novas cores
         dataInicio.repaint();
         dataFim.repaint();
     }
